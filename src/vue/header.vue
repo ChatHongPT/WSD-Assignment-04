@@ -16,9 +16,18 @@
         </nav>
       </div>
       <div class="header-right">
-        <button class="icon-button" @click="removeKey">
-          <font-awesome-icon :icon="['fas', 'user']" />
-        </button>
+        <!-- 로그인 상태에 따라 버튼을 분기 처리 -->
+        <div v-if="isLoggedIn">
+          <span class="user-name">{{ userName }}</span>
+          <button class="icon-button" @click="handleLogout">
+            <font-awesome-icon :icon="['fas', 'user']" />
+          </button>
+        </div>
+        <div v-else>
+          <button class="icon-button" @click="handleKakaoLogin">
+            <font-awesome-icon :icon="['fas', 'user']" />
+          </button>
+        </div>
         <button class="icon-button mobile-menu-button" @click="toggleMobileMenu">
           <font-awesome-icon :icon="['fas', 'bars']" />
         </button>
@@ -44,8 +53,8 @@
 
 <script>
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faSearch, faUser, faTicket, faBars, faTimes } from '@fortawesome/free-solid-svg-icons'
-import { library } from '@fortawesome/fontawesome-svg-core'
+import { faSearch, faUser, faTicket, faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { library } from '@fortawesome/fontawesome-svg-core';
 
 library.add(faSearch, faUser, faTicket, faBars, faTimes);
 
@@ -57,8 +66,10 @@ export default {
   data() {
     return {
       isScrolled: false,
-      isMobileMenuOpen: false
-    }
+      isMobileMenuOpen: false,
+      isLoggedIn: false,
+      userName: ""
+    };
   },
   methods: {
     removeKey() {
@@ -70,10 +81,52 @@ export default {
     },
     handleScroll() {
       this.isScrolled = window.scrollY > 50;
+    },
+    handleKakaoLogin() {
+      if (!window.Kakao.isInitialized()) {
+        window.Kakao.init("YOUR_KAKAO_REST_API_KEY");  // 자신의 카카오 REST API 키로 교체
+      }
+
+      window.Kakao.Auth.login({
+        success: function (authObj) {
+          window.Kakao.API.request({
+            url: "/v2/user/me",
+            success: function (res) {
+              // 로그인 후 사용자 정보 저장
+              this.isLoggedIn = true;
+              this.userName = res.kakao_account.profile.nickname;
+              localStorage.setItem('isLoggedIn', true);
+              localStorage.setItem('userName', this.userName);
+              this.$router.push("/"); // 로그인 후 메인 페이지로 리디렉션
+            }.bind(this),
+            fail: function (error) {
+              alert("Failed to fetch Kakao user info: " + JSON.stringify(error));
+            }
+          });
+        },
+        fail: function (err) {
+          alert("Kakao login failed: " + JSON.stringify(err));
+        }
+      });
+    },
+    handleLogout() {
+      window.Kakao.Auth.logout(() => {
+        this.isLoggedIn = false;
+        this.userName = "";
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('userName');
+        this.$router.push("/signin");  // 로그아웃 후 로그인 페이지로 리디렉션
+      });
     }
   },
   mounted() {
     window.addEventListener('scroll', this.handleScroll);
+
+    // 새로고침 시 로그인 상태 확인
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+      this.isLoggedIn = true;
+      this.userName = localStorage.getItem('userName');
+    }
   },
   beforeUnmount() {
     window.removeEventListener('scroll', this.handleScroll);
@@ -81,8 +134,7 @@ export default {
 };
 </script>
 
-<style>
-
+<style scoped>
 .app-header {
   height: 40px;
   display: flex;
