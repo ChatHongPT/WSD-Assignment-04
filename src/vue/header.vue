@@ -72,50 +72,54 @@ export default {
     };
   },
   methods: {
-    removeKey() {
-      localStorage.removeItem('TMDb-Key');
-      this.$router.push('/signin');
-    },
     toggleMobileMenu() {
       this.isMobileMenuOpen = !this.isMobileMenuOpen;
     },
     handleScroll() {
       this.isScrolled = window.scrollY > 50;
     },
+    // 카카오 로그인 처리
     handleKakaoLogin() {
       if (!window.Kakao.isInitialized()) {
-        window.Kakao.init("YOUR_KAKAO_REST_API_KEY");  // 자신의 카카오 REST API 키로 교체
+        window.Kakao.init(import.meta.env.VITE_KAKAO_REST_API_KEY); // 환경 변수에서 API 키 가져오기
       }
 
       window.Kakao.Auth.login({
-        success: function (authObj) {
+        success: (authObj) => {
           window.Kakao.API.request({
             url: "/v2/user/me",
-            success: function (res) {
-              // 로그인 후 사용자 정보 저장
+            success: (res) => {
               this.isLoggedIn = true;
               this.userName = res.kakao_account.profile.nickname;
-              localStorage.setItem('isLoggedIn', true);
-              localStorage.setItem('userName', this.userName);
+
+              // 로컬 스토리지에 로그인 정보 저장
+              localStorage.setItem("isLoggedIn", "true");
+              localStorage.setItem("userName", this.userName);
+
+              console.log("User Info:", res); // 콘솔에 회원 정보 출력
               this.$router.push("/"); // 로그인 후 메인 페이지로 리디렉션
-            }.bind(this),
-            fail: function (error) {
+            },
+            fail: (error) => {
               alert("Failed to fetch Kakao user info: " + JSON.stringify(error));
             }
           });
         },
-        fail: function (err) {
+        fail: (err) => {
           alert("Kakao login failed: " + JSON.stringify(err));
         }
       });
     },
+    // 로그아웃 처리
     handleLogout() {
       window.Kakao.Auth.logout(() => {
         this.isLoggedIn = false;
         this.userName = "";
-        localStorage.removeItem('isLoggedIn');
-        localStorage.removeItem('userName');
-        this.$router.push("/signin");  // 로그아웃 후 로그인 페이지로 리디렉션
+
+        // 로컬 스토리지에서 로그인 정보 삭제
+        localStorage.removeItem("isLoggedIn");
+        localStorage.removeItem("userName");
+
+        this.$router.push("/signin"); // 로그아웃 후 로그인 페이지로 리디렉션
       });
     }
   },
@@ -123,9 +127,17 @@ export default {
     window.addEventListener('scroll', this.handleScroll);
 
     // 새로고침 시 로그인 상태 확인
-    if (localStorage.getItem('isLoggedIn') === 'true') {
+    if (localStorage.getItem("isLoggedIn") === "true") {
       this.isLoggedIn = true;
-      this.userName = localStorage.getItem('userName');
+      this.userName = localStorage.getItem("userName");
+    }
+
+    // 카카오 SDK 로드
+    if (!window.Kakao) {
+      const script = document.createElement("script");
+      script.src = "https://developers.kakao.com/sdk/js/kakao.min.js";
+      script.onload = () => console.log("Kakao SDK loaded");
+      document.head.appendChild(script);
     }
   },
   beforeUnmount() {
