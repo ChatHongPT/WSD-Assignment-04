@@ -105,6 +105,10 @@ export default {
           });
         });
 
+        // 토큰 저장 추가
+        console.log('인증 객체:', authObj);
+        localStorage.setItem('kakaoToken', authObj.access_token);
+
         const userInfo = await new Promise((resolve, reject) => {
           window.Kakao.API.request({
             url: "/v2/user/me",
@@ -113,12 +117,24 @@ export default {
           });
         });
 
-        // 로그인 정보 저장
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('userName', userInfo.kakao_account.profile.nickname);
-        localStorage.setItem('kakaoUserInfo', JSON.stringify(userInfo));
+        // 디버깅을 위한 로그
+        console.log('카카오 사용자 정보:', userInfo);
+        
+        try {
+          localStorage.setItem('isLoggedIn', 'true');
+          localStorage.setItem('userName', userInfo.kakao_account?.profile?.nickname || 'Unknown User');
+          localStorage.setItem('kakaoUserInfo', JSON.stringify(userInfo));
+          
+          // 저장 확인
+          console.log('저장된 데이터:', {
+            isLoggedIn: localStorage.getItem('isLoggedIn'),
+            userName: localStorage.getItem('userName'),
+            kakaoUserInfo: localStorage.getItem('kakaoUserInfo')
+          });
+        } catch (storageError) {
+          console.error('로컬 스토리지 저장 실패:', storageError);
+        }
 
-        // URL을 통한 직접 이동
         window.location.href = '/WSD-Assignment-04/';
 
       } catch (error) {
