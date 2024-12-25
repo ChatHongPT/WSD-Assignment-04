@@ -20,6 +20,7 @@
     name: "User",
     data() {
       return {
+        // 로컬 스토리지에서 카카오 사용자 정보 가져오기
         userInfo: JSON.parse(localStorage.getItem('kakaoUserInfo') || '{}')
       };
     }
