@@ -92,39 +92,45 @@ export default {
       acceptTerms.value
     );
 
+    // 카카오 로그인 처리
     const handleKakaoLogin = () => {
-  if (!window.Kakao.isInitialized()) {
-    window.Kakao.init(import.meta.env.VITE_KAKAO_REST_API_KEY);  // Vite 환경 변수를 사용하여 카카오 REST API 키 가져오기
-  }
+      if (!window.Kakao.isInitialized()) {
+        window.Kakao.init(import.meta.env.VITE_KAKAO_REST_API_KEY);  // Vite 환경 변수를 사용하여 카카오 REST API 키 가져오기
+      }
 
-  window.Kakao.Auth.login({
-    success: function (authObj) {
-      window.Kakao.API.request({
-        url: "/v2/user/me",
-        success: function (res) {
-          alert(`Welcome, ${res.kakao_account.email || "User"}!`);
-          // 로그인 성공 후 리디렉션 (쿼리 파라미터 방식으로 리디렉션)
-          window.location.href = "https://chathongpt.github.io/WSD-Assignment-04/?auth=true";
+      window.Kakao.Auth.login({
+        success: function (authObj) {
+          window.Kakao.API.request({
+            url: "/v2/user/me",
+            success: function (res) {
+              alert(`Welcome, ${res.kakao_account.email || "User"}!`);
+
+              // 로그인 성공 후 리디렉션 (메인 화면으로 이동)
+              localStorage.setItem('isLoggedIn', 'true');
+              localStorage.setItem('userName', res.kakao_account.profile.nickname);
+              localStorage.setItem('kakaoUserInfo', JSON.stringify(res));
+
+              // 로그인 성공 후 바로 메인 화면으로 리디렉션
+              router.push('/WSD-Assignment-04/');  // 라우터를 통해 메인 화면으로 이동
+            },
+            fail: function (error) {
+              alert("Failed to fetch Kakao user info: " + JSON.stringify(error));
+            }
+          });
         },
-        fail: function (error) {
-          alert("Failed to fetch Kakao user info: " + JSON.stringify(error));
+        fail: function (err) {
+          alert("Kakao login failed: " + JSON.stringify(err));
         },
+        redirectUri: "https://chathongpt.github.io/WSD-Assignment-04/?auth=true"  // 리디렉션 URI 설정
       });
-    },
-    fail: function (err) {
-      alert("Kakao login failed: " + JSON.stringify(err));
-    },
-    redirectUri: "https://chathongpt.github.io/WSD-Assignment-04/?auth=true"  // 리디렉션 URI 설정
-  });
-};
-
+    };
 
     const handleLogin = () => {
       tryLogin(
         email.value,
         password.value,
         () => {
-          router.push("/");
+          router.push("/");  // 로그인 성공 후 메인 페이지로 리디렉션
         },
         () => {
           alert("Login failed");
