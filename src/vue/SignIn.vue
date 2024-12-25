@@ -98,25 +98,25 @@ export default {
       }
 
       window.Kakao.Auth.login({
-  success: function (authObj) {
-    window.Kakao.API.request({
-      url: "/v2/user/me",
-      success: function (res) {
-        alert(`Welcome, ${res.kakao_account.email || "User"}!`);
-        // 로그인 성공 후 리디렉션 (쿼리 파라미터 방식으로 리디렉션)
-        window.location.href = "https://chathongpt.github.io/WSD-Assignment-04/?auth=true";
-      },
-      fail: function (error) {
-        alert("Failed to fetch Kakao user info: " + JSON.stringify(error));
-      },
-    });
-  },
-  fail: function (err) {
-    alert("Kakao login failed: " + JSON.stringify(err));
-  },
-  redirectUri: "https://chathongpt.github.io/WSD-Assignment-04/?auth=true"  // 리디렉션 URI 설정
-});
-
+        success: function (authObj) {
+          window.Kakao.API.request({
+            url: "/v2/user/me",
+            success: function (res) {
+              alert(`Welcome, ${res.kakao_account.email || "User"}!`);
+              // 로그인 성공 후 리디렉션 (쿼리 파라미터 방식으로 리디렉션)
+              window.location.href = "https://chathongpt.github.io/WSD-Assignment-04/?auth=true";
+            },
+            fail: function (error) {
+              alert("Failed to fetch Kakao user info: " + JSON.stringify(error));
+            },
+          });
+        },
+        fail: function (err) {
+          alert("Kakao login failed: " + JSON.stringify(err));
+        },
+        redirectUri: "https://chathongpt.github.io/WSD-Assignment-04/?auth=true"  // 리디렉션 URI 설정
+      });
+    };
 
     const handleLogin = () => {
       tryLogin(
