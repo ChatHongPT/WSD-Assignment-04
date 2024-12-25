@@ -78,71 +78,104 @@ export default {
     handleScroll() {
       this.isScrolled = window.scrollY > 50;
     },
-    // 카카오 로그인 처리
     handleKakaoLogin() {
-      if (!window.Kakao.isInitialized()) {
-        window.Kakao.init(import.meta.env.VITE_KAKAO_REST_API_KEY);  // Vite 환경 변수에서 API 키 가져오기
-      }
-
-      window.Kakao.Auth.login({
-        success: (authObj) => {
-          window.Kakao.API.request({
-            url: "/v2/user/me",
-            success: (res) => {
-              this.isLoggedIn = true;
-              this.userName = res.kakao_account.profile.nickname;
-
-              // 로컬 스토리지에 사용자 정보 저장
-              const userInfo = {
-                id: res.id,
-                account_email: res.kakao_account.email,
-                nickname: res.kakao_account.profile.nickname
-              };
-              localStorage.setItem("kakaoUserInfo", JSON.stringify(userInfo)); // 로컬스토리지에 저장
-
-              console.log("User Info:", res); // 콘솔에 회원 정보 출력
-
-              // 메인 페이지로 리디렉션
-              this.$router.push('/');  // '/'는 홈 페이지의 경로입니다
-            },
-            fail: (error) => {
-              alert("Failed to fetch Kakao user info: " + JSON.stringify(error));
-            }
-          });
-        },
-        fail: (err) => {
-          alert("Kakao login failed: " + JSON.stringify(err));
+      try {
+        if (!window.Kakao.isInitialized()) {
+          window.Kakao.init(import.meta.env.VITE_KAKAO_REST_API_KEY);
         }
-      });
+
+        window.Kakao.Auth.login({
+          success: (authObj) => {
+            // 토큰 저장
+            localStorage.setItem('kakaoToken', authObj.access_token);
+            
+            window.Kakao.API.request({
+              url: "/v2/user/me",
+              success: (res) => {
+                // 상태 업데이트
+                this.isLoggedIn = true;
+                this.userName = res.kakao_account.profile.nickname;
+
+                // 로컬 스토리지에 정보 저장
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userName', res.kakao_account.profile.nickname);
+                localStorage.setItem('kakaoUserInfo', JSON.stringify({
+                  id: res.id,
+                  account_email: res.kakao_account.email,
+                  nickname: res.kakao_account.profile.nickname
+                }));
+
+                console.log('로그인 성공:', {
+                  isLoggedIn: localStorage.getItem('isLoggedIn'),
+                  userName: localStorage.getItem('userName'),
+                  userInfo: localStorage.getItem('kakaoUserInfo')
+                });
+
+                this.$router.push('/');
+              },
+              fail: (error) => {
+                console.error('사용자 정보 요청 실패:', error);
+                alert("사용자 정보를 가져오는데 실패했습니다.");
+              }
+            });
+          },
+          fail: (err) => {
+            console.error('카카오 로그인 실패:', err);
+            alert("로그인에 실패했습니다.");
+          }
+        });
+      } catch (error) {
+        console.error('로그인 처리 중 오류:', error);
+        alert("로그인 처리 중 오류가 발생했습니다.");
+      }
     },
-    // 로그아웃 처리
+
     handleLogout() {
-      window.Kakao.Auth.logout(() => {
-        this.isLoggedIn = false;
-        this.userName = "";
+      if (window.Kakao.Auth.getAccessToken()) {
+        window.Kakao.Auth.logout(() => {
+          // 상태 초기화
+          this.isLoggedIn = false;
+          this.userName = "";
 
-        // 로컬 스토리지에서 로그인 정보 삭제
-        localStorage.removeItem("isLoggedIn");
-        localStorage.removeItem("userName");
+          // 로컬 스토리지 클리어
+          localStorage.removeItem('isLoggedIn');
+          localStorage.removeItem('userName');
+          localStorage.removeItem('kakaoUserInfo');
+          localStorage.removeItem('kakaoToken');
 
-        this.$router.push("/signin"); // 로그아웃 후 로그인 페이지로 리디렉션
-      });
+          console.log('로그아웃 완료');
+          this.$router.push("/signin");
+        });
+      } else {
+        console.log('로그아웃: 이미 로그아웃 상태');
+      }
     }
   },
+
   mounted() {
     window.addEventListener('scroll', this.handleScroll);
 
-    // 새로고침 시 로그인 상태 확인
-    if (localStorage.getItem("isLoggedIn") === "true") {
+    // 로그인 상태 확인 개선
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    const userName = localStorage.getItem('userName');
+    const userInfo = localStorage.getItem('kakaoUserInfo');
+
+    console.log('마운트 시 로그인 상태:', { isLoggedIn, userName, userInfo });
+
+    if (isLoggedIn === 'true' && userName) {
       this.isLoggedIn = true;
-      this.userName = localStorage.getItem("userName");
+      this.userName = userName;
     }
 
     // 카카오 SDK 로드
     if (!window.Kakao) {
-      const script = document.createElement("script");
-      script.src = "https://developers.kakao.com/sdk/js/kakao.min.js";
-      script.onload = () => console.log("Kakao SDK loaded");
+      const script = document.createElement('script');
+      script.src = 'https://developers.kakao.com/sdk/js/kakao.min.js';
+      script.async = true;
+      script.onload = () => {
+        console.log('카카오 SDK 로드 완료');
+        window.Kakao.init(import.meta.env.VITE_KAKAO_REST_API_KEY);
+      };
       document.head.appendChild(script);
     }
   },
