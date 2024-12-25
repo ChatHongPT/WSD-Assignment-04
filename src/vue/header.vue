@@ -18,7 +18,7 @@
       <div class="header-right">
         <!-- 로그인 상태에 따라 버튼을 분기 처리 -->
         <div v-if="isLoggedIn">
-          <span class="user-name">{{ userName }}</span>
+          <span class="user-name">안녕하세요, {{ userName }}님</span>
           <button class="icon-button" @click="handleLogout">
             <font-awesome-icon :icon="['fas', 'user']" />
           </button>
