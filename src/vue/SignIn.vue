@@ -22,7 +22,6 @@
               </span>
               <button :disabled="!isLoginFormValid">Login</button>
               <div class="social-login">
-                <!-- 카카오 로그인 버튼 -->
                 <button type="button" @click="handleKakaoLogin">Login with Kakao</button>
               </div>
             </form>
@@ -65,8 +64,7 @@
 <script>
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import Cookies from "js-cookie";  // 쿠키 관리
-import { tryLogin, tryRegister } from "@/script/auth/Authentication.js";  // 로그인 및 회원가입 처리 함수
+import { tryLogin, tryRegister } from "@/script/auth/Authentication.js";
 
 export default {
   setup() {
@@ -96,41 +94,35 @@ export default {
 
     const handleKakaoLogin = () => {
       if (!window.Kakao.isInitialized()) {
-        window.Kakao.init(import.meta.env.VITE_KAKAO_REST_API_KEY);  // 카카오 REST API 키 초기화
+        window.Kakao.init(import.meta.env.VITE_KAKAO_REST_API_KEY);  // Vite 환경 변수를 사용하여 카카오 REST API 키 가져오기
       }
 
       window.Kakao.Auth.login({
-        success: async function (data) {
-          // 로그인 성공 시 KakaoLoginSuccess 호출
-          await KakaoLoginSuccess(data);
-        },
-        fail: function (data) {
-          alert("Login Failed: " + JSON.stringify(data));  // 실패 시 알림
-        }
-      });
-    };
-
-    const KakaoLoginSuccess = async (data) => {
-      const access_token = data.access_token;  // 카카오 로그인 후 받은 액세스 토큰
-      const body = { access_token: access_token };
-      const cookie = new Cookies();  // 쿠키 사용
-
-      try {
-        const login_request = await API.kakaoLoginRequest(body);  // 백엔드로 로그인 요청
-        cookie.set("token", login_request.data.token, { path: "/" });  // 받은 token을 쿠키에 저장
-        window.location.href = "/";  // 로그인 후 홈 페이지로 리디렉션
-      } catch (error) {
-        console.error("Kakao Login Error:", error);
-        alert("로그인 처리 중 문제가 발생했습니다.");
-      }
-    };
+  success: function (authObj) {
+    window.Kakao.API.request({
+      url: "/v2/user/me",
+      success: function (res) {
+        alert(`Welcome, ${res.kakao_account.email || "User"}!`);
+        // 로그인 성공 후 리디렉션 (쿼리 파라미터 방식으로 리디렉션)
+        window.location.href = "https://chathongpt.github.io/WSD-Assignment-04/?auth=true";
+      },
+      fail: function (error) {
+        alert("Failed to fetch Kakao user info: " + JSON.stringify(error));
+      },
+    });
+  },
+  fail: function (err) {
+    alert("Kakao login failed: " + JSON.stringify(err));
+  },
+  redirectUri: "https://chathongpt.github.io/WSD-Assignment-04/?auth=true"  // 리디렉션 URI 설정
+});
 
     const handleLogin = () => {
       tryLogin(
         email.value,
         password.value,
         () => {
-          router.push("/");  // 로그인 후 홈 페이지로 이동
+          router.push("/");
         },
         () => {
           alert("Login failed");
@@ -228,7 +220,6 @@ export default {
   },
 };
 </script>
-
 
 <style scoped>
 :root {
