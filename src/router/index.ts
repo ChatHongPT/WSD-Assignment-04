@@ -4,7 +4,7 @@ import Home from "../vue/home.vue";
 
 const routes = [
     {
-        path: '/',
+        path: '/WSD-Assignment-04/',
         name: 'Main',
         component: Home,
         meta: { requiresAuth: true }, // 인증이 필요한 경우 설정
