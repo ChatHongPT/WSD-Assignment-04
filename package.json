@@ -1,5 +1,6 @@
 {
   "name": "demo",
+  "homepage": "https://chathongpt.github.io/WSD-Assignment-04/",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -26,4 +27,5 @@
     "vite": "^5.4.1",
     "vue-tsc": "^2.0.29"
   }
+  
 }
