@@ -7,39 +7,23 @@ const routes = [
         path: '/WSD-Assignment-04/',
         name: 'Main',
         component: Home,
-        meta: { requiresAuth: true }, // 인증이 필요한 경우 설정
+        meta: { requiresAuth: true },
         children: [
-            {
-                name: 'HomeMain',
-                component: () => import('@/views/home-main.vue'),
-                path: '/',
-            },
-            {
-                name: 'HomePopular',
-                component: () => import('@/views/home-popular.vue'),
-                path: 'popular',
-            },
-            {
-                name: 'HomeWishList',
-                component: () => import('@/views/home-wishlist.vue'),
-                path: 'wishlist',
-            },
-            {
-                name: 'HomeSearch',
-                component: () => import('@/views/home-search.vue'),
-                path: 'search',
-            }
+            { name: 'HomeMain', component: () => import('@/views/home-main.vue'), path: '/' },
+            { name: 'HomePopular', component: () => import('@/views/home-popular.vue'), path: 'popular' },
+            { name: 'HomeWishList', component: () => import('@/views/home-wishlist.vue'), path: 'wishlist' },
+            { name: 'HomeSearch', component: () => import('@/views/home-search.vue'), path: 'search' }
         ]
     },
     {
         path: '/signin',
-        name: 'SignIn', // name 추가
+        name: 'SignIn',
         component: SignIn,
     },
 ];
 
 const router = createRouter({
-    history: createWebHashHistory('/WSD-Assignment-04/'), // base 경로 설정
+    history: createWebHashHistory('/WSD-Assignment-04/'),
     routes
 });
 
@@ -47,18 +31,16 @@ router.beforeEach((to, _from, next): void => {
     const isAuthenticated = localStorage.getItem('TMDb-Key') !== null;
 
     if (to.matched.some(record => record.meta.requiresAuth)) {
-        // If the route requires authentication and the user is not authenticated
         if (!isAuthenticated) {
-            next({ name: 'SignIn' }); // Redirect to the SignIn page
+            next({ name: 'SignIn' });
         } else {
-            next(); // Proceed to the requested route
+            next();
         }
     } else {
-        // If the user is already authenticated and tries to access the SignIn page
         if (to.name === 'SignIn' && isAuthenticated) {
-            next({ name: 'Main' }); // Redirect to the home page
+            next({ name: 'Main' });
         } else {
-            next(); // Proceed to the requested route
+            next();
         }
     }
 });
