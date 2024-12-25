@@ -4,6 +4,7 @@
     <div class="container">
       <div id="phone">
         <div id="content-wrapper">
+          <!-- 로그인 카드 -->
           <div :class="['card', { hidden: !isLoginVisible }]" id="login">
             <form @submit.prevent="handleLogin">
               <h1>Sign in</h1>
@@ -21,12 +22,13 @@
               </span>
               <button :disabled="!isLoginFormValid">Login</button>
               <div class="social-login">
-                <button type="button" id="kakao-login-btn" @click="handleKakaoLogin">Login with Kakao</button>
+                <button type="button" @click="handleKakaoLogin">Login with Kakao</button>
               </div>
             </form>
             <a href="javascript:void(0)" class="account-check" @click="toggleCard">Don't have an account? <b>Sign up</b></a>
           </div>
 
+          <!-- 회원가입 카드 -->
           <div :class="['card', { hidden: isLoginVisible }]" id="register">
             <form @submit.prevent="handleRegister">
               <h1>Sign up</h1>
@@ -48,7 +50,7 @@
               </span>
               <button :disabled="!isRegisterFormValid">Register</button>
               <div class="social-login">
-                <button type="button" id="kakao-register-btn" @click="handleKakaoLogin">Sign up with Kakao</button>
+                <button type="button" @click="handleKakaoLogin">Sign up with Kakao</button>
               </div>
             </form>
             <a href="javascript:void(0)" class="account-check" @click="toggleCard">Already have an account? <b>Sign in</b></a>
@@ -62,7 +64,7 @@
 <script>
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { tryLogin, tryRegister, TMDb_API_KEY, KAKAO_JAVASCRIPT_KEY } from "@/script/auth/Authentication.js";
+import { tryLogin, tryRegister } from "@/script/auth/Authentication.js";
 
 export default {
   setup() {
@@ -92,7 +94,7 @@ export default {
 
     const handleKakaoLogin = () => {
       if (!window.Kakao.isInitialized()) {
-        window.Kakao.init(KAKAO_JAVASCRIPT_KEY);
+        window.Kakao.init(import.meta.env.VITE_KAKAO_REST_API_KEY);  // Vite 환경 변수를 사용하여 카카오 REST API 키 가져오기
       }
 
       window.Kakao.Auth.login({
@@ -101,7 +103,7 @@ export default {
             url: "/v2/user/me",
             success: function (res) {
               alert(`Welcome, ${res.kakao_account.email || "User"}!`);
-              router.push("/");
+              router.push("/");  // 로그인 후 메인 화면으로 리디렉션
             },
             fail: function (error) {
               alert("Failed to fetch Kakao user info: " + JSON.stringify(error));

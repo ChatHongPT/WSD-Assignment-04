@@ -1,8 +1,6 @@
-import dotenv from 'dotenv';
-
-// Vite의 환경 변수 시스템을 사용하여 API 키를 가져옵니다.
+// Vite의 환경 변수 시스템을 사용하여 카카오 REST API 키를 가져옵니다.
 const TMDb_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
-const KAKAO_JAVASCRIPT_KEY = import.meta.env.VITE_KAKAO_JAVASCRIPT_KEY;
+const KAKAO_REST_API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY;  // REST API 키
 
 const tryLogin = (email, password, success, fail, saveToken = true) => {
     const users = JSON.parse(localStorage.getItem('users')) || [];
@@ -11,7 +9,7 @@ const tryLogin = (email, password, success, fail, saveToken = true) => {
 
     if (user) {
         if (saveToken) {
-            // 환경 변수에 저장된 TMDb API 키를 로컬 스토리지에 저장 (데모용)
+            // TMDb API 키를 로컬 스토리지에 저장 (데모용)
             localStorage.setItem('TMDb-Key', TMDb_API_KEY);
         }
         success(user);
@@ -38,4 +36,4 @@ const tryRegister = (email, password, success, fail) => {
     }
 };
 
-export { tryLogin, tryRegister, TMDb_API_KEY, KAKAO_JAVASCRIPT_KEY };
+export { tryLogin, tryRegister, TMDb_API_KEY, KAKAO_REST_API_KEY };
