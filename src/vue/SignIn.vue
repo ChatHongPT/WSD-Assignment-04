@@ -219,7 +219,8 @@ export default {
   },
 };
 </script>
-<style>
+
+<style scoped>
 :root {
   --container-start-x: -50%;
   --container-end-x: -90%;
@@ -290,7 +291,6 @@ a {
   justify-content: flex-start;
 }
 
-
 @media (max-height: 600px) {
   #phone {
     transform: translate(-50%, -50%) scale(0.5); /* Scale down on small screens */
@@ -323,7 +323,6 @@ input {
   padding: 0;
   margin: 0;
 }
-
 
 .read-text {
   display: flex;
