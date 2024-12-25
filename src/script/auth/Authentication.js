@@ -18,6 +18,27 @@ const tryLogin = (email, password, success, fail, saveToken = true) => {
     }
 };
 
+// 카카오 로그인 후 받은 사용자 정보 저장
+const tryKakaoLogin = (userInfo, success, fail) => {
+    try {
+        // 사용자 정보 저장 (카카오 로그인 후 반환된 정보)
+        const { id, account_email, nickname } = userInfo;
+
+        // 사용자 정보 저장 (여기서 'userInfo'는 카카오에서 받아온 정보)
+        const kakaoUserInfo = {
+            id,
+            account_email,
+            nickname
+        };
+
+        localStorage.setItem('kakaoUserInfo', JSON.stringify(kakaoUserInfo)); // 로컬스토리지에 저장
+
+        success(kakaoUserInfo); // 로그인 성공시 호출
+    } catch (err) {
+        fail(err); // 실패시 호출
+    }
+};
+
 const tryRegister = (email, password, success, fail) => {
     try {
         const users = JSON.parse(localStorage.getItem('users')) || [];
@@ -36,4 +57,4 @@ const tryRegister = (email, password, success, fail) => {
     }
 };
 
-export { tryLogin, tryRegister, TMDb_API_KEY, KAKAO_REST_API_KEY };
+export { tryLogin, tryRegister, tryKakaoLogin, TMDb_API_KEY, KAKAO_REST_API_KEY };
