@@ -68,6 +68,7 @@ import { tryLogin, tryRegister } from "@/script/auth/Authentication.js";
 
 export default {
   setup() {
+    const router = useRouter();
     const isLoginVisible = ref(true);
     const email = ref("");
     const password = ref("");
@@ -81,7 +82,6 @@ export default {
     const isRegisterEmailFocused = ref(false);
     const isRegisterPasswordFocused = ref(false);
     const isConfirmPasswordFocused = ref(false);
-    const router = useRouter();
 
     const isLoginFormValid = computed(() => email.value && password.value);
     const isRegisterFormValid = computed(() =>
@@ -92,37 +92,42 @@ export default {
       acceptTerms.value
     );
 
-    // 카카오 로그인 처리
-    const handleKakaoLogin = () => {
-      if (!window.Kakao.isInitialized()) {
-        window.Kakao.init(import.meta.env.VITE_KAKAO_REST_API_KEY);  // Vite 환경 변수를 사용하여 카카오 REST API 키 가져오기
-      }
+    const handleKakaoLogin = async () => {
+      try {
+        if (!window.Kakao.isInitialized()) {
+          window.Kakao.init(import.meta.env.VITE_KAKAO_REST_API_KEY);
+        }
 
-      window.Kakao.Auth.login({
-        success: function (authObj) {
+        const authObj = await new Promise((resolve, reject) => {
+          window.Kakao.Auth.login({
+            success: resolve,
+            fail: (err) => reject(new Error("Kakao login failed: " + JSON.stringify(err))),
+            redirectUri: window.location.origin + '/WSD-Assignment-04/'
+          });
+        });
+
+        const userInfo = await new Promise((resolve, reject) => {
           window.Kakao.API.request({
             url: "/v2/user/me",
-            success: function (res) {
-              alert(`Welcome, ${res.kakao_account.email || "User"}!`);
-
-              // 로그인 성공 후 리디렉션 (메인 화면으로 이동)
-              localStorage.setItem('isLoggedIn', 'true');
-              localStorage.setItem('userName', res.kakao_account.profile.nickname);
-              localStorage.setItem('kakaoUserInfo', JSON.stringify(res));
-
-              // 로그인 성공 후 바로 메인 화면으로 리디렉션
-              router.push('/WSD-Assignment-04/');  // 라우터를 통해 메인 화면으로 이동
-            },
-            fail: function (error) {
-              alert("Failed to fetch Kakao user info: " + JSON.stringify(error));
-            }
+            success: resolve,
+            fail: (error) => reject(new Error("Failed to fetch Kakao user info: " + JSON.stringify(error)))
           });
-        },
-        fail: function (err) {
-          alert("Kakao login failed: " + JSON.stringify(err));
-        },
-        redirectUri: "https://chathongpt.github.io/WSD-Assignment-04/?auth=true"  // 리디렉션 URI 설정
-      });
+        });
+
+        // 로그인 정보 저장
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('userName', userInfo.kakao_account.profile.nickname);
+        localStorage.setItem('kakaoUserInfo', JSON.stringify(userInfo));
+
+        // 메인 페이지로 이동
+        await router.push('/WSD-Assignment-04/');
+        
+        alert(`Welcome, ${userInfo.kakao_account.email || "User"}!`);
+
+      } catch (error) {
+        console.error('Login error:', error);
+        alert("Login failed: " + error.message);
+      }
     };
 
     const handleLogin = () => {
@@ -130,7 +135,7 @@ export default {
         email.value,
         password.value,
         () => {
-          router.push("/");  // 로그인 성공 후 메인 페이지로 리디렉션
+          router.push("/WSD-Assignment-04/");
         },
         () => {
           alert("Login failed");
@@ -220,10 +225,12 @@ export default {
       isConfirmPasswordFocused,
       isLoginFormValid,
       isRegisterFormValid,
-      toggleCard,
+      handleKakaoLogin,
       handleLogin,
       handleRegister,
-      handleKakaoLogin,
+      toggleCard,
+      focusInput,
+      blurInput
     };
   },
 };
@@ -238,9 +245,6 @@ export default {
   --container-start-color: #ECECEC;
   --container-end-color: #100f0f;
 }
-</style>
-
-<style scoped>
 
 .bg-image {
   position: fixed;
@@ -289,12 +293,10 @@ a {
   border-radius: min(2.5cqw, 2.0cqh);
   text-align: center;
   transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -302,13 +304,13 @@ a {
 
 @media (max-height: 600px) {
   #phone {
-    transform: translate(-50%, -50%) scale(0.5); /* Scale down on small screens */
+    transform: translate(-50%, -50%) scale(0.5);
   }
 }
 
 @media (max-height: 400px) {
   #phone {
-    transform: translate(-50%, -50%) scale(0.3); /* Further scale down */
+    transform: translate(-50%, -50%) scale(0.3);
   }
 }
 
@@ -337,7 +339,7 @@ input {
   display: flex;
   align-items: center;
   justify-content: center;
-  text-indent: 10px; /* 원하는 들여쓰기 크기로 조정하세요 */
+  text-indent: 10px;
   color: #2b2b2b !important;
   font-weight: 900;
 }
@@ -347,7 +349,6 @@ h1 {
   font-weight:800;
   text-align:center;
   margin-top:0;
-
   color:#272727;
 }
 
@@ -500,9 +501,7 @@ button:hover {
   padding:27px 30px 46px 30px;
   box-shadow: 0 5px 10px rgba(0,0,0,0.16);
   transition: all 0.4s 0.1s ease;
-
   top: 50%;
-
   left: 50%;
   transform: translateX(-50%);
 }
@@ -555,7 +554,6 @@ button:hover {
   background-color:#2069ff;
   box-shadow: 0px 20px 40px rgba(23,83,209,0.8);
   padding:0px 30px 0px 30px;
-
 }
 
 #register.hidden form {
@@ -603,10 +601,9 @@ button:hover {
 }
 
 @media (max-width: 768px) {
-
   #phone {
     width: 70%;
-    transform: translate(-50%, -70%) scale(1); /* Scale down on small screens */
+    transform: translate(-50%, -70%) scale(1);
   }
 
   #login {
@@ -628,4 +625,17 @@ button:hover {
   }
 }
 
+.social-login {
+  margin-top: 1rem;
+}
+
+.social-login button {
+  background-color: #FEE500;
+  color: #000000;
+  box-shadow: 0px 10px 30px rgba(254,229,0,0.3);
+}
+
+.social-login button:hover {
+  box-shadow: 0px 2px 10px rgba(254,229,0,0.4);
+}
 </style>
