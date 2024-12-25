@@ -94,12 +94,15 @@ export default {
 
     const handleKakaoLogin = async () => {
       try {
-        // 카카오 SDK 초기화
+        // 카카오 JavaScript API 키 불러오기
+        const kakaoApiKey = import.meta.env.VITE_KAKAO_JAVASCRIPT_KEY;
+        console.log('Kakao API Key:', kakaoApiKey);  // 콘솔에서 API 키 확인
+
         if (!window.Kakao.isInitialized()) {
-          window.Kakao.init(import.meta.env.VITE_KAKAO_REST_API_KEY);
+          // 카카오 SDK 초기화
+          window.Kakao.init(kakaoApiKey);
         }
 
-        // 카카오 로그인 요청
         const authObj = await new Promise((resolve, reject) => {
           window.Kakao.Auth.login({
             success: resolve,
@@ -107,45 +110,33 @@ export default {
           });
         });
 
-        // 로그인 성공 시 인증 객체 확인
-        console.log('인증 객체:', authObj);
+        console.log('Authentication Object:', authObj);
         localStorage.setItem('kakaoToken', authObj.access_token);
 
-        // 사용자 정보 가져오기
         const userInfo = await new Promise((resolve, reject) => {
           window.Kakao.API.request({
             url: "/v2/user/me",
             success: resolve,
-            fail: (error) => reject(new Error("Failed to fetch Kakao user info: " + JSON.stringify(error)))
+            fail: (error) => reject(new Error("Failed to fetch Kakao user info: " + JSON.stringify(error))),
           });
         });
 
-        console.log('카카오 사용자 정보:', userInfo);
-        
-        // 로컬 스토리지에 로그인 정보 저장
-        try {
-          localStorage.setItem('isLoggedIn', 'true');
-          localStorage.setItem('userName', userInfo.kakao_account?.profile?.nickname || 'Unknown User');
-          localStorage.setItem('kakaoUserInfo', JSON.stringify(userInfo));
-          
-          // 저장된 데이터 확인
-          console.log('저장된 데이터:', {
-            isLoggedIn: localStorage.getItem('isLoggedIn'),
-            userName: localStorage.getItem('userName'),
-            kakaoUserInfo: localStorage.getItem('kakaoUserInfo')
-          });
-        } catch (storageError) {
-          console.error('로컬 스토리지 저장 실패:', storageError);
-        }
+        console.log('Kakao User Info:', userInfo);
 
-        // 로그인 성공 후 메인 페이지로 리디렉션
-        window.location.href = '/WSD-Assignment-04/';  // 원하는 메인 페이지 경로로 수정하세요
+        // 로컬 스토리지에 사용자 정보 저장
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('userName', userInfo.kakao_account?.profile?.nickname || 'Unknown User');
+        localStorage.setItem('kakaoUserInfo', JSON.stringify(userInfo));
+
+        // 로그인 후 메인 페이지로 리디렉션
+        window.location.href = '/WSD-Assignment-04/';
 
       } catch (error) {
         console.error('Login error:', error);
         alert("Login failed: " + error.message);
       }
     };
+
 
 
     const handleLogin = () => {
