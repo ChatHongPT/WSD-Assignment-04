@@ -102,7 +102,6 @@ export default {
           window.Kakao.Auth.login({
             success: resolve,
             fail: (err) => reject(new Error("Kakao login failed: " + JSON.stringify(err))),
-            redirectUri: window.location.origin + '/WSD-Assignment-04/'
           });
         });
 
@@ -119,10 +118,8 @@ export default {
         localStorage.setItem('userName', userInfo.kakao_account.profile.nickname);
         localStorage.setItem('kakaoUserInfo', JSON.stringify(userInfo));
 
-        // 메인 페이지로 이동
-        await router.push('/WSD-Assignment-04/');
-        
-        alert(`Welcome, ${userInfo.kakao_account.email || "User"}!`);
+        // URL을 통한 직접 이동
+        window.location.href = '/WSD-Assignment-04/';
 
       } catch (error) {
         console.error('Login error:', error);
@@ -135,7 +132,7 @@ export default {
         email.value,
         password.value,
         () => {
-          router.push("/WSD-Assignment-04/");
+          window.location.href = '/WSD-Assignment-04/';
         },
         () => {
           alert("Login failed");
