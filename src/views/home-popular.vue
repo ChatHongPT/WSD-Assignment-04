@@ -9,7 +9,6 @@ import MovieInfiniteScroll from "@/components/popular/MovieInfiniteScroll.vue";
 
 library.add(faTh, faBars);
 
-
 defineComponent({
   components: {
     FontAwesomeIcon
@@ -17,6 +16,7 @@ defineComponent({
 });
 
 const apiKey = localStorage.getItem('TMDb-Key') || '';
+const genreCode = ''; // 필수 prop 추가
 const fetchURL = getURL4PopularMovies(apiKey);
 
 const currentView = ref('grid');
@@ -24,7 +24,6 @@ const currentView = ref('grid');
 const setView = (view: string) => {
   currentView.value = view;
 };
-
 
 const disableScroll = () => {
   document.body.style.overflow = 'hidden';
@@ -59,43 +58,15 @@ onMounted(() => {
         v-if="currentView === 'grid'"
         title="인기 영화"
         :fetchUrl="fetchURL"
+        :apiKey="apiKey"
+        :genreCode="genreCode"
     />
     <MovieInfiniteScroll
         v-if="currentView === 'list'"
         title="인기 영화"
         :fetchUrl="fetchURL"
+        :apiKey="apiKey"
+        :genreCode="genreCode"
     />
   </div>
 </template>
-
-<style>
-
-</style>
-
-<style scoped>
-.view-toggle {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 50px;
-}
-
-.view-toggle button {
-  background-color: #333;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  margin-left: 10px;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.view-toggle button.active {
-  background-color: #535bf2;
-}
-
-@media (max-width: 768px) {
-  .view-toggle {
-    margin-top: 80px;
-  }
-}
-</style>
