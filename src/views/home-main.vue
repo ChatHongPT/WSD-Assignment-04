@@ -10,7 +10,7 @@ import {
   getURL4GenreMovies,
   getURL4PopularMovies,
   getURL4ReleaseMovies
-} from "@/script/movie/URL.ts";
+} from "@/script/movie/URL";
 
 library.add(faSearch, faUser);
 
