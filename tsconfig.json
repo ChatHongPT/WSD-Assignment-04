@@ -1,22 +1,20 @@
 {
   "compilerOptions": {
     "composite": true,
-    "baseUrl": ".",        // 기본 경로 설정
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]     // @ 경로 별칭 설정
+      "@/*": ["src/*"]
     },
-    "types": ["node"],     // Node.js 타입 선언 추가
-    "module": "ESNext",    // ESNext 모듈 시스템 사용
-    "moduleResolution": "node", // Node 방식으로 모듈 해석
-    "target": "ESNext",    // 최신 JavaScript 버전 타겟
-    "jsx": "preserve",     // Vue의 JSX 지원 설정
-    "esModuleInterop": true, // ES6 모듈 호환성 설정
-    "skipLibCheck": true,  // 라이브러리 체크 건너뜀
-    "strict": true         // 엄격한 타입 검사 활성화
+    "types": ["node"],
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "target": "ESNext",
+    "jsx": "preserve",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "outDir": "./dist" // 출력 디렉토리 설정
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue", "src/**/*.tsx"],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
+  "exclude": ["dist", "node_modules"] // dist와 node_modules 제외
 }
