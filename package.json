@@ -5,11 +5,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "serve": "vue-cli-service serve --mode development", 
-    "build": "vue-cli-service build --mode production",  
-    "lint": "vue-cli-service lint",
-    "typecheck": "vue-tsc --noEmit",
-    "preview": "vite preview"
+  "serve": "vite",  
+  "build": "vite build",  
+  "lint": "vue-cli-service lint", 
+  "typecheck": "vue-tsc --noEmit",  
+  "preview": "vite preview"  
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.6.0",
