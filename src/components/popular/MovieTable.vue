@@ -23,7 +23,7 @@
 <script>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import axios from 'axios';
-import {useWishlist} from "@/script/movie/wishlist";
+import {useWishlist} from "@/script/movie/wishlist.ts";
 
 export default {
   name: 'MovieGrid',
