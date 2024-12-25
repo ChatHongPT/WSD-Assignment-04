@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/24-02-WSD-Assignment-02-Demo/Logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>24-02 WSD Assignment 02</title>
+
+      <script>
+          (function(){
+              var redirect = sessionStorage.redirect;
+              delete sessionStorage.redirect;
+              if (redirect && redirect != location.href) {
+                  history.replaceState(null, null, redirect);
+              }
+          })();
+      </script>
+    <script type="module" crossorigin src="/24-02-WSD-Assignment-02-Demo/assets/index-CB4ssdfa.js"></script>
+    <link rel="stylesheet" crossorigin href="/24-02-WSD-Assignment-02-Demo/assets/index-CuBr9PZM.css">
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+</html>
