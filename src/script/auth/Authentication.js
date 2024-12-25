@@ -1,4 +1,11 @@
-// script.js
+import dotenv from 'dotenv';
+
+// 환경 변수 로드
+dotenv.config();
+
+const TMDb_API_KEY = process.env.VITE_TMDB_API_KEY;
+const KAKAO_JAVASCRIPT_KEY = process.env.REACT_APP_KAKAO_JAVASCRIPT_KEY;
+
 const tryLogin = (email, password, success, fail, saveToken = true) => {
     const users = JSON.parse(localStorage.getItem('users')) || [];
 
@@ -6,7 +13,8 @@ const tryLogin = (email, password, success, fail, saveToken = true) => {
 
     if (user) {
         if (saveToken) {
-            localStorage.setItem('TMDb-Key', user.password);
+            // 환경 변수에 저장된 TMDb API 키를 로컬 스토리지에 저장 (데모용)
+            localStorage.setItem('TMDb-Key', TMDb_API_KEY);
         }
         success(user);
     } else {
@@ -32,4 +40,4 @@ const tryRegister = (email, password, success, fail) => {
     }
 };
 
-export { tryLogin, tryRegister };
+export { tryLogin, tryRegister, TMDb_API_KEY, KAKAO_JAVASCRIPT_KEY };
