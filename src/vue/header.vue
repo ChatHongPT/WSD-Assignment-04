@@ -81,7 +81,7 @@ export default {
     // 카카오 로그인 처리
     handleKakaoLogin() {
       if (!window.Kakao.isInitialized()) {
-        window.Kakao.init(import.meta.env.VITE_KAKAO_REST_API_KEY); // 환경 변수에서 API 키 가져오기
+        window.Kakao.init(import.meta.env.VITE_KAKAO_REST_API_KEY);  // Vite 환경 변수에서 API 키 가져오기
       }
 
       window.Kakao.Auth.login({
@@ -92,12 +92,18 @@ export default {
               this.isLoggedIn = true;
               this.userName = res.kakao_account.profile.nickname;
 
-              // 로컬 스토리지에 로그인 정보 저장
-              localStorage.setItem("isLoggedIn", "true");
-              localStorage.setItem("userName", this.userName);
+              // 로컬 스토리지에 사용자 정보 저장
+              const userInfo = {
+                id: res.id,
+                account_email: res.kakao_account.email,
+                nickname: res.kakao_account.profile.nickname
+              };
+              localStorage.setItem("kakaoUserInfo", JSON.stringify(userInfo)); // 로컬스토리지에 저장
 
               console.log("User Info:", res); // 콘솔에 회원 정보 출력
-              this.$router.push("/"); // 로그인 후 메인 페이지로 리디렉션
+
+              // 메인 페이지로 리디렉션
+              this.$router.push('/');  // '/'는 홈 페이지의 경로입니다
             },
             fail: (error) => {
               alert("Failed to fetch Kakao user info: " + JSON.stringify(error));

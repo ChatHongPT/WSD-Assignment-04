@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import SignIn from '@/vue/SignIn.vue';
-import Home from "../vue/home.vue";
+import Home from "@/vue/home.vue";
 
 const routes = [
     {
@@ -27,7 +27,7 @@ const router = createRouter({
     routes
 });
 
-router.beforeEach((to, _from, next): void => {
+router.beforeEach((to, _from, next) => {
     const isAuthenticated = localStorage.getItem('TMDb-Key') !== null;
 
     if (to.matched.some(record => record.meta.requiresAuth)) {
