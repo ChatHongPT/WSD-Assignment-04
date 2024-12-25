@@ -1,4 +1,4 @@
-import {createRouter, createWebHashHistory} from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router';
 import SignIn from '@/vue/SignIn.vue';
 import Home from "../vue/home.vue";
 
@@ -36,12 +36,12 @@ const routes = [
         name: 'SignIn', // name 추가
         component: SignIn,
     },
-]
+];
 
 const router = createRouter({
-    history: createWebHashHistory('/WSD-Assignment-04/'),
+    history: createWebHashHistory('/WSD-Assignment-04/'), // base 경로 설정
     routes
-})
+});
 
 router.beforeEach((to, _from, next): void => {
     const isAuthenticated = localStorage.getItem('TMDb-Key') !== null;
@@ -56,14 +56,11 @@ router.beforeEach((to, _from, next): void => {
     } else {
         // If the user is already authenticated and tries to access the SignIn page
         if (to.name === 'SignIn' && isAuthenticated) {
-            next({ name: '/' }); // Redirect to the home page
-        }
-        else {
+            next({ name: 'Main' }); // Redirect to the home page
+        } else {
             next(); // Proceed to the requested route
         }
     }
 });
 
-
-export default router
-
+export default router;
