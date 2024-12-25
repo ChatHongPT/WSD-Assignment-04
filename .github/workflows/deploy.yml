@@ -23,15 +23,16 @@ jobs:
         cache: 'npm'
 
     - name: Install dependencies
-      run: npm install
+      run: npm ci # npm ci를 사용하여 더 빠르고 안정적인 설치
+
+    - name: Run TypeScript Check
+      run: npx vue-tsc --noEmit # TypeScript 타입 검사만 수행
 
     - name: Run build
-      env:
-        TS_NODE_PROJECT: ./tsconfig.json
-      run: |
-        npm run build || (echo "TypeScript errors detected" && exit 2)
+      run: npm run build # 빌드 수행
 
     - name: Deploy to GitHub Pages
+      if: success() # 빌드가 성공한 경우에만 실행
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
