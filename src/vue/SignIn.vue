@@ -3,53 +3,55 @@
     <div class="bg-image" />
     <div class="container">
       <div id="phone">
-
         <div id="content-wrapper">
           <div :class="['card', { hidden: !isLoginVisible }]" id="login">
             <form @submit.prevent="handleLogin">
               <h1>Sign in</h1>
               <div class="input" :class="{ 'active': isEmailFocused || email }">
-                <input id="email" type="email" v-model="email" @focus="focusInput('email')" @blur="blurInput('email')">
+                <input id="email" type="email" v-model="email" @focus="focusInput('email')" @blur="blurInput('email')" />
                 <label for="email">Username or Email</label>
               </div>
               <div class="input" :class="{ 'active': isPasswordFocused || password }">
-                <input id="password" type="password" v-model="password" @focus="focusInput('password')" @blur="blurInput('password')">
+                <input id="password" type="password" v-model="password" @focus="focusInput('password')" @blur="blurInput('password')" />
                 <label for="password">Password</label>
               </div>
               <span class="checkbox remember">
-              <input type="checkbox" id="remember" v-model="rememberMe">
-              <label for="remember" class="read-text">Remember me</label>
-            </span>
-              <span class="checkbox forgot">
-              <a href="#">Forgot Password?</a>
-            </span>
+                <input type="checkbox" id="remember" v-model="rememberMe" />
+                <label for="remember" class="read-text">Remember me</label>
+              </span>
               <button :disabled="!isLoginFormValid">Login</button>
+              <div class="social-login">
+                <button type="button" id="kakao-login-btn" @click="handleKakaoLogin">Login with Kakao</button>
+              </div>
             </form>
-            <a href="javascript:void(0)" class="account-check" @click="toggleCard">Already an account? <b>Sign in</b></a>
+            <a href="javascript:void(0)" class="account-check" @click="toggleCard">Don't have an account? <b>Sign up</b></a>
           </div>
 
           <div :class="['card', { hidden: isLoginVisible }]" id="register">
             <form @submit.prevent="handleRegister">
               <h1>Sign up</h1>
               <div class="input" :class="{ 'active': isRegisterEmailFocused || registerEmail }">
-                <input id="register-email" type="email" v-model="registerEmail" @focus="focusInput('registerEmail')" @blur="blurInput('registerEmail')">
+                <input id="register-email" type="email" v-model="registerEmail" @focus="focusInput('registerEmail')" @blur="blurInput('registerEmail')" />
                 <label for="register-email">Email</label>
               </div>
               <div class="input" :class="{ 'active': isRegisterPasswordFocused || registerPassword }">
-                <input id="register-password" type="password" v-model="registerPassword" @focus="focusInput('registerPassword')" @blur="blurInput('registerPassword')">
+                <input id="register-password" type="password" v-model="registerPassword" @focus="focusInput('registerPassword')" @blur="blurInput('registerPassword')" />
                 <label for="register-password">Password</label>
               </div>
               <div class="input" :class="{ 'active': isConfirmPasswordFocused || confirmPassword }">
-                <input id="confirm-password" type="password" v-model="confirmPassword" @focus="focusInput('confirmPassword')" @blur="blurInput('confirmPassword')">
+                <input id="confirm-password" type="password" v-model="confirmPassword" @focus="focusInput('confirmPassword')" @blur="blurInput('confirmPassword')" />
                 <label for="confirm-password">Confirm Password</label>
               </div>
               <span class="checkbox remember">
-              <input type="checkbox" id="terms" v-model="acceptTerms">
-              <label for="terms" class="read-text">I have read <b>Terms and Conditions</b></label>
-            </span>
+                <input type="checkbox" id="terms" v-model="acceptTerms" />
+                <label for="terms" class="read-text">I have read <b>Terms and Conditions</b></label>
+              </span>
               <button :disabled="!isRegisterFormValid">Register</button>
+              <div class="social-login">
+                <button type="button" id="kakao-register-btn" @click="handleKakaoLogin">Sign up with Kakao</button>
+              </div>
             </form>
-            <a href="javascript:void(0)" id="gotologin" class="account-check" @click="toggleCard">Don't have an account? <b>Sign up</b></a>
+            <a href="javascript:void(0)" class="account-check" @click="toggleCard">Already have an account? <b>Sign in</b></a>
           </div>
         </div>
       </div>
@@ -58,114 +60,163 @@
 </template>
 
 <script>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import {tryLogin, tryRegister} from "@/script/auth/Authentication.js";
-import { useRouter } from 'vue-router'
-
+import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { tryLogin, tryRegister, TMDb_API_KEY, KAKAO_JAVASCRIPT_KEY } from "@/script/auth/Authentication.js";
 
 export default {
   setup() {
-    const isLoginVisible = ref(true) // should be changed to true
-    const email = ref('')
-    const password = ref('')
-    const registerEmail = ref('')
-    const registerPassword = ref('')
-    const confirmPassword = ref('')
-    const rememberMe = ref(false)
-    const acceptTerms = ref(false)
-    const isEmailFocused = ref(false)
-    const isPasswordFocused = ref(false)
-    const isRegisterEmailFocused = ref(false)
-    const isRegisterPasswordFocused = ref(false)
-    const isConfirmPasswordFocused = ref(false)
-    const cursorStyle = ref({ display: 'none', left: '0px', top: '0px', transform: 'scale(1)' })
-    const hours = ref('')
-    const minutes = ref('')
-    const ampm = ref('')
+    const isLoginVisible = ref(true);
+    const email = ref("");
+    const password = ref("");
+    const registerEmail = ref("");
+    const registerPassword = ref("");
+    const confirmPassword = ref("");
+    const rememberMe = ref(false);
+    const acceptTerms = ref(false);
+    const isEmailFocused = ref(false);
+    const isPasswordFocused = ref(false);
+    const isRegisterEmailFocused = ref(false);
+    const isRegisterPasswordFocused = ref(false);
+    const isConfirmPasswordFocused = ref(false);
     const router = useRouter();
 
-    const isLoginFormValid = computed(() => email.value && password.value)
+    const isLoginFormValid = computed(() => email.value && password.value);
     const isRegisterFormValid = computed(() =>
-        registerEmail.value &&
-        registerPassword.value &&
-        confirmPassword.value &&
-        registerPassword.value === confirmPassword.value &&
-        acceptTerms.value
-    )
+      registerEmail.value &&
+      registerPassword.value &&
+      confirmPassword.value &&
+      registerPassword.value === confirmPassword.value &&
+      acceptTerms.value
+    );
 
-    const toggleCard = () => {
-      isLoginVisible.value = !isLoginVisible.value
-      setTimeout(() => {
-        document.getElementById('register').classList.toggle('register-swap')
-        document.getElementById('login').classList.toggle('login-swap')
-      }, 50)
-    }
-
-    const focusInput = (inputName) => {
-      switch(inputName) {
-        case 'email': isEmailFocused.value = true; break;
-        case 'password': isPasswordFocused.value = true; break;
-        case 'registerEmail': isRegisterEmailFocused.value = true; break;
-        case 'registerPassword': isRegisterPasswordFocused.value = true; break;
-        case 'confirmPassword': isConfirmPasswordFocused.value = true; break;
+    const handleKakaoLogin = () => {
+      if (!window.Kakao.isInitialized()) {
+        window.Kakao.init(KAKAO_JAVASCRIPT_KEY);
       }
-    }
 
-    const blurInput = (inputName) => {
-      switch(inputName) {
-        case 'email': isEmailFocused.value = false; break;
-        case 'password': isPasswordFocused.value = false; break;
-        case 'registerEmail': isRegisterEmailFocused.value = false; break;
-        case 'registerPassword': isRegisterPasswordFocused.value = false; break;
-        case 'confirmPassword': isConfirmPasswordFocused.value = false; break;
-      }
-    }
-
-    onMounted(() => {
-
-    })
-
-    onUnmounted(() => {
-    })
+      window.Kakao.Auth.login({
+        success: function (authObj) {
+          window.Kakao.API.request({
+            url: "/v2/user/me",
+            success: function (res) {
+              alert(`Welcome, ${res.kakao_account.email || "User"}!`);
+              router.push("/");
+            },
+            fail: function (error) {
+              alert("Failed to fetch Kakao user info: " + JSON.stringify(error));
+            },
+          });
+        },
+        fail: function (err) {
+          alert("Kakao login failed: " + JSON.stringify(err));
+        },
+      });
+    };
 
     const handleLogin = () => {
       tryLogin(
-          email.value,
-          password.value,
-          () => {
-            router.push('/');
-          },
-          () => {
-            alert('Login failed');
-          }
-      )
-    }
+        email.value,
+        password.value,
+        () => {
+          router.push("/");
+        },
+        () => {
+          alert("Login failed");
+        }
+      );
+    };
 
     const handleRegister = () => {
       tryRegister(
-          registerEmail.value,
-          registerPassword.value,
-          () => {
-            toggleCard();
-          },
-          (err) => {
-            alert(err);
-          }
-      )
-    }
+        registerEmail.value,
+        registerPassword.value,
+        () => {
+          toggleCard();
+        },
+        (err) => {
+          alert(err);
+        }
+      );
+    };
+
+    const toggleCard = () => {
+      isLoginVisible.value = !isLoginVisible.value;
+    };
+
+    const focusInput = (inputName) => {
+      switch (inputName) {
+        case "email":
+          isEmailFocused.value = true;
+          break;
+        case "password":
+          isPasswordFocused.value = true;
+          break;
+        case "registerEmail":
+          isRegisterEmailFocused.value = true;
+          break;
+        case "registerPassword":
+          isRegisterPasswordFocused.value = true;
+          break;
+        case "confirmPassword":
+          isConfirmPasswordFocused.value = true;
+          break;
+      }
+    };
+
+    const blurInput = (inputName) => {
+      switch (inputName) {
+        case "email":
+          isEmailFocused.value = false;
+          break;
+        case "password":
+          isPasswordFocused.value = false;
+          break;
+        case "registerEmail":
+          isRegisterEmailFocused.value = false;
+          break;
+        case "registerPassword":
+          isRegisterPasswordFocused.value = false;
+          break;
+        case "confirmPassword":
+          isConfirmPasswordFocused.value = false;
+          break;
+      }
+    };
+
+    onMounted(() => {
+      if (!window.Kakao) {
+        const script = document.createElement("script");
+        script.src = "https://developers.kakao.com/sdk/js/kakao.min.js";
+        script.onload = () => console.log("Kakao SDK loaded");
+        document.head.appendChild(script);
+      }
+    });
 
     return {
-      isLoginVisible, email, password, registerEmail, registerPassword, confirmPassword,
-      rememberMe, acceptTerms, isEmailFocused, isPasswordFocused, isRegisterEmailFocused,
-      isRegisterPasswordFocused, isConfirmPasswordFocused, cursorStyle, hours, minutes, ampm,
-      isLoginFormValid, isRegisterFormValid, toggleCard, focusInput, blurInput,
-      handleLogin, handleRegister
-    }
-  }
-}
+      isLoginVisible,
+      email,
+      password,
+      registerEmail,
+      registerPassword,
+      confirmPassword,
+      rememberMe,
+      acceptTerms,
+      isEmailFocused,
+      isPasswordFocused,
+      isRegisterEmailFocused,
+      isRegisterPasswordFocused,
+      isConfirmPasswordFocused,
+      isLoginFormValid,
+      isRegisterFormValid,
+      toggleCard,
+      handleLogin,
+      handleRegister,
+      handleKakaoLogin,
+    };
+  },
+};
 </script>
-
-
 <style>
 :root {
   --container-start-x: -50%;

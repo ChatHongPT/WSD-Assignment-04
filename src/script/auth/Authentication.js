@@ -1,10 +1,8 @@
 import dotenv from 'dotenv';
 
-// 환경 변수 로드
-dotenv.config();
-
-const TMDb_API_KEY = process.env.VITE_TMDB_API_KEY;
-const KAKAO_JAVASCRIPT_KEY = process.env.REACT_APP_KAKAO_JAVASCRIPT_KEY;
+// Vite의 환경 변수 시스템을 사용하여 API 키를 가져옵니다.
+const TMDb_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+const KAKAO_JAVASCRIPT_KEY = import.meta.env.VITE_KAKAO_JAVASCRIPT_KEY;
 
 const tryLogin = (email, password, success, fail, saveToken = true) => {
     const users = JSON.parse(localStorage.getItem('users')) || [];
