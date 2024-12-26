@@ -2,10 +2,17 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>WSD-Assignment-04 - 404 Not Found</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>404 - Not Found</title>
+
     <script>
-      // GitHub Pages에서 URL을 올바르게 리디렉션하는 스크립트
+      // Single Page Apps for GitHub Pages
+      // MIT License: https://github.com/rafgraph/spa-github-pages
+
+      // This script takes the current URL, converts the path and query string
+      // into just a query string, and redirects the browser to the new URL.
       var pathSegmentsToKeep = 1;
+
       var l = window.location;
       l.replace(
         l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
@@ -14,7 +21,13 @@
         (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
         l.hash
       );
+
+      // 404 에러 시 경로를 리다이렉트 (SPA 경로 처리)
+      sessionStorage.redirect = location.href;
     </script>
+
+    <!-- 자동 리다이렉트를 위한 meta 태그 (JavaScript 리디렉션이 실패할 경우 fallback용) -->
+    <meta http-equiv="refresh" content="0; URL='/WSD-Assignment-04/'" />
   </head>
   <body>
   </body>
