@@ -5,7 +5,7 @@ import path from 'path'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
-  base: 'WSD-Assignment-04/', // GitHub Pages 배포용 base 경로 설정
+  base: 'WSD-Assignment-04', // GitHub Pages 배포용 base 경로 설정
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src')
