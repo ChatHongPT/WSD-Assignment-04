@@ -63,7 +63,7 @@ export default {
       isMobileMenuOpen: false,
       userName: '',
       isAuthenticated: false,
-      baseUrl: import.meta.env.VITE_BASE_URL || ''
+      baseUrl: ''
     }
   },
   methods: {

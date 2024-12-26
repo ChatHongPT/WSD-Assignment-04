@@ -20,7 +20,7 @@
         const data = {
           grant_type: "authorization_code",
           client_id: import.meta.env.VITE_KAKAO_JAVASCRIPT_KEY, // JavaScript API 키
-          redirect_uri: "http://localhost:3001/kakaologin/callback", // 리디렉션 URI
+          redirect_uri: `/kakaologin/callback`, // 리디렉션 URI
           code: code
         };
   

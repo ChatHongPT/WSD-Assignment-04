@@ -128,7 +128,7 @@ export default {
     // 카카오 로그인 기능
     const kakaoLogin = () => {
       window.Kakao.Auth.authorize({
-        redirectUri: `${import.meta.env.VITE_BASE_URL}/kakaologin/callback`
+        redirectUri: `/kakaologin/callback`
       })
     }
 
