@@ -29,7 +29,13 @@ const routes = [
         name: 'HomeSearch',
         component: () => import('@/views/home-search.vue'),
         path: 'search',
+      },
+      {
+        name: 'Callback',
+        component: () => import('@/views/Callback.vue'),
+        path: '/kakaologin/callback',
       }
+      
     ]
   },
   {
