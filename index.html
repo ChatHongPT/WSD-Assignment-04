@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -13,15 +13,13 @@
       crossorigin="anonymous"
     ></script>
 
-    <!-- SPA 경로 처리 스크립트 -->
-    <script type="text/javascript">
-      (function() {
-        var redirect = sessionStorage.redirect;
-        delete sessionStorage.redirect;
-        if (redirect && redirect !== location.href) {
-          // GitHub Pages 경로에 맞게 리다이렉션 처리
-          history.replaceState(null, null, redirect.replace('/WSD-Assignment-04', ''));
-        }
+    <script>
+      (function(){
+          var redirect = sessionStorage.redirect;
+          delete sessionStorage.redirect;
+          if (redirect && redirect != location.href) {
+              history.replaceState(null, null, redirect);
+          }
       })();
     </script>
     <script type="module" crossorigin src="/WSD-Assignment-04/assets/index-DOus_prH.js"></script>
@@ -29,7 +27,5 @@
   </head>
   <body>
     <div id="app"></div>
-
-    <!-- Vue.js 앱을 실행하는 스크립트 -->
   </body>
 </html>
