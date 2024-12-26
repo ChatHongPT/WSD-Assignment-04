@@ -24,7 +24,7 @@
           const data = {
             grant_type: "authorization_code",
             client_id: import.meta.env.VITE_KAKAO_JAVASCRIPT_KEY,
-            redirect_uri: `${window.location.origin}/kakaologin/callback`,
+            redirect_uri: `${window.location.origin}/WSD-Assignment-04/kakaologin/callback`,
             code: code
           }
   
