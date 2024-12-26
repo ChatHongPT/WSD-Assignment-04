@@ -16,18 +16,9 @@
         </nav>
       </div>
       <div class="header-right">
-        <!-- 로그인 상태에 따라 버튼을 분기 처리 -->
-        <div v-if="isLoggedIn">
-          <span class="user-name">안녕하세요, {{ userName }}님</span>
-          <button class="icon-button" @click="handleLogout">
-            <font-awesome-icon :icon="['fas', 'user']" />
-          </button>
-        </div>
-        <div v-else>
-          <button class="icon-button" @click="handleKakaoLogin">
-            <font-awesome-icon :icon="['fas', 'user']" />
-          </button>
-        </div>
+        <button class="icon-button" @click="removeKey">
+          <font-awesome-icon :icon="['fas', 'user']" />
+        </button>
         <button class="icon-button mobile-menu-button" @click="toggleMobileMenu">
           <font-awesome-icon :icon="['fas', 'bars']" />
         </button>
@@ -53,8 +44,8 @@
 
 <script>
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faSearch, faUser, faTicket, faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { library } from '@fortawesome/fontawesome-svg-core';
+import { faSearch, faUser, faTicket, faBars, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { library } from '@fortawesome/fontawesome-svg-core'
 
 library.add(faSearch, faUser, faTicket, faBars, faTimes);
 
@@ -66,118 +57,23 @@ export default {
   data() {
     return {
       isScrolled: false,
-      isMobileMenuOpen: false,
-      isLoggedIn: false,
-      userName: ""
-    };
+      isMobileMenuOpen: false
+    }
   },
   methods: {
+    removeKey() {
+      localStorage.removeItem('TMDb-Key');
+      this.$router.push('/signin');
+    },
     toggleMobileMenu() {
       this.isMobileMenuOpen = !this.isMobileMenuOpen;
     },
     handleScroll() {
       this.isScrolled = window.scrollY > 50;
-    },
-    handleKakaoLogin() {
-      try {
-        if (!window.Kakao.isInitialized()) {
-          window.Kakao.init(import.meta.env.VITE_KAKAO_REST_API_KEY);
-        }
-
-        window.Kakao.Auth.login({
-          success: (authObj) => {
-            // 토큰 저장
-            localStorage.setItem('kakaoToken', authObj.access_token);
-            
-            window.Kakao.API.request({
-              url: "/v2/user/me",
-              success: (res) => {
-                // 상태 업데이트
-                this.isLoggedIn = true;
-                this.userName = res.kakao_account.profile.nickname;
-
-                // 로컬 스토리지에 정보 저장
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userName', res.kakao_account.profile.nickname);
-                localStorage.setItem('kakaoUserInfo', JSON.stringify({
-                  id: res.id,
-                  account_email: res.kakao_account.email,
-                  nickname: res.kakao_account.profile.nickname
-                }));
-
-                console.log('로그인 성공:', {
-                  isLoggedIn: localStorage.getItem('isLoggedIn'),
-                  userName: localStorage.getItem('userName'),
-                  userInfo: localStorage.getItem('kakaoUserInfo')
-                });
-
-                this.$router.push('/');
-              },
-              fail: (error) => {
-                console.error('사용자 정보 요청 실패:', error);
-                alert("사용자 정보를 가져오는데 실패했습니다.");
-              }
-            });
-          },
-          fail: (err) => {
-            console.error('카카오 로그인 실패:', err);
-            alert("로그인에 실패했습니다.");
-          }
-        });
-      } catch (error) {
-        console.error('로그인 처리 중 오류:', error);
-        alert("로그인 처리 중 오류가 발생했습니다.");
-      }
-    },
-
-    handleLogout() {
-      if (window.Kakao.Auth.getAccessToken()) {
-        window.Kakao.Auth.logout(() => {
-          // 상태 초기화
-          this.isLoggedIn = false;
-          this.userName = "";
-
-          // 로컬 스토리지 클리어
-          localStorage.removeItem('isLoggedIn');
-          localStorage.removeItem('userName');
-          localStorage.removeItem('kakaoUserInfo');
-          localStorage.removeItem('kakaoToken');
-
-          console.log('로그아웃 완료');
-          this.$router.push("/signin");
-        });
-      } else {
-        console.log('로그아웃: 이미 로그아웃 상태');
-      }
     }
   },
-
   mounted() {
     window.addEventListener('scroll', this.handleScroll);
-
-    // 로그인 상태 확인 개선
-    const isLoggedIn = localStorage.getItem('isLoggedIn');
-    const userName = localStorage.getItem('userName');
-    const userInfo = localStorage.getItem('kakaoUserInfo');
-
-    console.log('마운트 시 로그인 상태:', { isLoggedIn, userName, userInfo });
-
-    if (isLoggedIn === 'true' && userName) {
-      this.isLoggedIn = true;
-      this.userName = userName;
-    }
-
-    // 카카오 SDK 로드
-    if (!window.Kakao) {
-      const script = document.createElement('script');
-      script.src = 'https://developers.kakao.com/sdk/js/kakao.min.js';
-      script.async = true;
-      script.onload = () => {
-        console.log('카카오 SDK 로드 완료');
-        window.Kakao.init(import.meta.env.VITE_KAKAO_REST_API_KEY);
-      };
-      document.head.appendChild(script);
-    }
   },
   beforeUnmount() {
     window.removeEventListener('scroll', this.handleScroll);
@@ -185,7 +81,8 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
+
 .app-header {
   height: 40px;
   display: flex;

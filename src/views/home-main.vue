@@ -1,3 +1,4 @@
+
 <script>
 import BannerComponent from "@/components/main/BannerComponent.vue";
 import MovieRow from "@/components/main/MovieRow.vue";
@@ -27,7 +28,6 @@ export default {
       popularMoviesUrl: '',
       newReleasesUrl: '',
       actionMoviesUrl: '',
-      userInfo: JSON.parse(localStorage.getItem('kakaoUserInfo') || '{}'), // 카카오 로그인 정보 가져오기
     };
   },
   created() {
@@ -60,18 +60,11 @@ export default {
 </script>
 
 <template>
-  <div>
-    <!-- 로그인된 사용자 정보 표시 (로그인 상태에 따라) -->
-    <div v-if="userInfo.nickname">
-      <h2>안녕하세요, {{ userInfo.nickname }}님</h2>
-    </div>
-
     <BannerComponent :movie="featuredMovie" />
 
     <movie-row title="인기 영화" :fetchUrl="popularMoviesUrl" />
     <movie-row title="최신 영화" :fetchUrl="newReleasesUrl" />
     <movie-row title="액션 영화" :fetchUrl="actionMoviesUrl" />
-  </div>
 </template>
 
 <style scoped>
