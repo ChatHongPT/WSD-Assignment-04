@@ -8,7 +8,7 @@ export default defineConfig({
   base: '/24-02-WSD-Assignment-02-Demo/', // GitHub Pages 배포용 base 경로 설정
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
+      '@': path.resolve(__dirname, 'src')
     }
   }
 })
