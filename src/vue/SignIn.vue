@@ -128,7 +128,7 @@ export default {
     // 카카오 로그인 기능
     const kakaoLogin = () => {
       window.Kakao.Auth.authorize({
-        redirectUri: "http://localhost:3001/24-02-WSD-Assignment-02-Demo/kakaologin/callback"
+        redirectUri: "http://localhost:3001/kakaologin/callback"
       })
     }
 
