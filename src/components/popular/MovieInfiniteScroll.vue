@@ -19,24 +19,15 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import {ref, computed, onMounted, onUnmounted, defineComponent, watch} from 'vue';
 import axios from 'axios';
 import {useWishlist} from "../../script/movie/wishlist";
 
-interface Movie {
-  id: number;
-  title: string;
-  poster_path: string;
-  original_language: string;
-  vote_average: number;
-  // Add other relevant movie properties
-}
-
 export default defineComponent({
   name: 'MovieGrid',
   props: {
-    genreCode : {
+    genreCode: {
       type: String,
       required: true
     },
@@ -53,21 +44,20 @@ export default defineComponent({
       type: Number,
       required: true,
       default: 100
-
     }
   },
   setup(props) {
-    const movies = ref<Movie[]>([]);
+    const movies = ref([]);
     const currentPage = ref(1);
-    const gridContainer = ref<HTMLElement | null>(null);
-    const loadingTrigger = ref<HTMLElement | null>(null);
+    const gridContainer = ref(null);
+    const loadingTrigger = ref(null);
     const rowSize = ref(4);
     const isLoading = ref(false);
     const isMobile = ref(window.innerWidth <= 768);
     const currentView = ref('grid');
     const hasMore = ref(true);
     const showTopButton = ref(false);
-    let wishlistTimer: number | null = null;
+    let wishlistTimer = null;
 
     watch(() => props.genreCode, () => {
       resetMovies();
@@ -81,17 +71,16 @@ export default defineComponent({
       resetMovies();
     });
 
-    // Use the wishlist composable
-    const {  loadWishlist, toggleWishlist, isInWishlist } = useWishlist();
+    const {loadWishlist, toggleWishlist, isInWishlist} = useWishlist();
 
-    const fetchMovies = async (): Promise<void> => {
+    const fetchMovies = async () => {
       if (isLoading.value || !hasMore.value) return;
 
       isLoading.value = true;
       let response = null;
       try {
         if (props.genreCode === "0") {
-          response = await axios.get<{ results: Movie[] }>(
+          response = await axios.get(
               `https://api.themoviedb.org/3/movie/popular`, {
                 params: {
                   api_key: props.apiKey,
@@ -102,7 +91,7 @@ export default defineComponent({
               }
           );
         } else {
-          response = await axios.get<{ results: Movie[] }>(
+          response = await axios.get(
               `https://api.themoviedb.org/3/discover/movie`, {
                 params: {
                   api_key: props.apiKey,
@@ -134,7 +123,6 @@ export default defineComponent({
           });
 
           movies.value = movieArray;
-
           currentPage.value++;
         } else {
           hasMore.value = false;
@@ -146,11 +134,11 @@ export default defineComponent({
       }
     };
 
-    const getImageUrl = (path: string | null): string => {
+    const getImageUrl = (path) => {
       return path ? `https://image.tmdb.org/t/p/w300${path}` : '/placeholder-image.jpg';
     };
 
-    const calculateLayout = (): void => {
+    const calculateLayout = () => {
       if (gridContainer.value) {
         const containerWidth = gridContainer.value.offsetWidth;
         const movieCardWidth = isMobile.value ? 100 : 300;
@@ -161,7 +149,7 @@ export default defineComponent({
     };
 
     const visibleMovieGroups = computed(() => {
-      return movies.value.reduce<Movie[][]>((resultArray, item, index) => {
+      return movies.value.reduce((resultArray, item, index) => {
         const groupIndex = Math.floor(index / rowSize.value);
         if (!resultArray[groupIndex]) {
           resultArray[groupIndex] = [];
@@ -171,12 +159,12 @@ export default defineComponent({
       }, []);
     });
 
-    const handleResize = (): void => {
+    const handleResize = () => {
       isMobile.value = window.innerWidth <= 768;
       calculateLayout();
     };
 
-    const checkAndLoadMore = (): void => {
+    const checkAndLoadMore = () => {
       if (!gridContainer.value) return;
 
       const lastRow = gridContainer.value.lastElementChild;
@@ -190,20 +178,20 @@ export default defineComponent({
       }
     };
 
-    const handleScroll = (): void => {
+    const handleScroll = () => {
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
       showTopButton.value = scrollTop > 300;
       checkAndLoadMore();
     };
 
-    const resetMovies = (): void => {
+    const resetMovies = () => {
       movies.value = [];
       currentPage.value = 1;
       hasMore.value = true;
       fetchMovies();
     };
 
-    const scrollToTopAndReset = (): void => {
+    const scrollToTopAndReset = () => {
       window.scrollTo({
         top: 0,
         behavior: 'smooth'
@@ -211,14 +199,14 @@ export default defineComponent({
       resetMovies();
     };
 
-    const startWishlistTimer = (movie: Movie): void => {
+    const startWishlistTimer = (movie) => {
       clearWishlistTimer();
       wishlistTimer = window.setTimeout(() => {
         toggleWishlist(movie);
       }, 800);
     };
 
-    const clearWishlistTimer = (): void => {
+    const clearWishlistTimer = () => {
       if (wishlistTimer !== null) {
         clearTimeout(wishlistTimer);
         wishlistTimer = null;
@@ -240,7 +228,7 @@ export default defineComponent({
               fetchMovies();
             }
           },
-          { rootMargin: '100px', threshold: 0.1 }
+          {rootMargin: '100px', threshold: 0.1}
       );
 
       if (loadingTrigger.value) {
@@ -276,7 +264,6 @@ export default defineComponent({
 });
 </script>
 
-
 <style scoped>
 html, body {
   overflow-y: scroll !important;
@@ -296,7 +283,6 @@ html, body {
   align-items: center;
 }
 
-
 .wishlist-indicator {
   position: absolute;
   top: -10px;
@@ -304,7 +290,6 @@ html, body {
   font-size: 30px;
   background-color: rgba(229, 9, 20, 0.5);
 }
-
 
 .movie-row {
   display: flex;
@@ -322,7 +307,7 @@ html, body {
   margin: 0 10px;
   transition: transform 0.3s;
   position: relative;
-  user-select: none; /* 텍스트 선택 방지 */
+  user-select: none;
 }
 
 .grid-container.list .movie-card {
