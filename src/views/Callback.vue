@@ -17,6 +17,7 @@
       const router = useRouter()
   
       const getKakaoToken = async (code) => {
+        console.log("getkakaotoken");
         const data = {
           grant_type: "authorization_code",
           client_id: import.meta.env.VITE_KAKAO_JAVASCRIPT_KEY, // JavaScript API 키
@@ -29,6 +30,7 @@
           .join("&");
   
         try {
+          console.log("queryString");
           const result = await axios.post(
             "https://kauth.kakao.com/oauth/token",
             queryString,
@@ -47,6 +49,7 @@
   
       const getKakaoUserInfo = async () => {
         let data = ""
+        console.log("getKakaouserinfo");
         await window.Kakao.API.request({ url: "/v2/user/me" })
           .then((response) => {
             data = response
@@ -59,12 +62,14 @@
   
       const setKakaoToken = async (code) => {
         const data = await getKakaoToken(code)
+        console.log("setkakaotoken");
         window.Kakao.Auth.setAccessToken(data.access_token)
         await setUserInfo(data.access_token) // 전달된 토큰을 setUserInfo로 넘김
       }
   
       const setUserInfo = async (accessToken) => {
         const res = await getKakaoUserInfo()
+        console.log("setuserinfo");
         const userInfo = {
           name: res.kakao_account.profile.nickname,
           email: res.kakao_account.email
@@ -90,6 +95,7 @@
       }
   
       onMounted(() => {
+        console.log("onmounted");
         const urlParams = new URLSearchParams(window.location.search)
         if (urlParams.has("code")) {
           const code = urlParams.get("code")
