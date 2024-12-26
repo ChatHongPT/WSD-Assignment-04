@@ -3,8 +3,8 @@
     <div class="bg-image" />
     <div class="container">
       <div id="phone">
-
         <div id="content-wrapper">
+          <!-- 로그인 폼 -->
           <div :class="['card', { hidden: !isLoginVisible }]" id="login">
             <form @submit.prevent="handleLogin">
               <h1>Sign in</h1>
@@ -17,17 +17,26 @@
                 <label for="password">Password</label>
               </div>
               <span class="checkbox remember">
-              <input type="checkbox" id="remember" v-model="rememberMe">
-              <label for="remember" class="read-text">Remember me</label>
-            </span>
+                <input type="checkbox" id="remember" v-model="rememberMe">
+                <label for="remember" class="read-text">Remember me</label>
+              </span>
               <span class="checkbox forgot">
-              <a href="#">Forgot Password?</a>
-            </span>
+                <a href="#">Forgot Password?</a>
+              </span>
+
               <button :disabled="!isLoginFormValid">Login</button>
+
+              <!-- 카카오 로그인 버튼을 로그인 버튼 아래에 추가 -->
+              <div class="kakao-login-container">
+                <a v-if="!user.email" @click="kakaoLogin" class="kakao-login-btn">
+                  <img src="//k.kakaocdn.net/14/dn/btqCn0WEmI3/nijroPfbpCa4at5EIsjyf0/o.jpg" width="222" />
+                </a>
+              </div>
             </form>
-            <a href="javascript:void(0)" class="account-check" @click="toggleCard">Already an account? <b>Sign in</b></a>
+            <a href="javascript:void(0)" class="account-check" @click="toggleCard">Don't have an account? <b>Sign up</b></a>
           </div>
 
+          <!-- 회원가입 폼 -->
           <div :class="['card', { hidden: isLoginVisible }]" id="register">
             <form @submit.prevent="handleRegister">
               <h1>Sign up</h1>
@@ -44,12 +53,12 @@
                 <label for="confirm-password">Confirm Password</label>
               </div>
               <span class="checkbox remember">
-              <input type="checkbox" id="terms" v-model="acceptTerms">
-              <label for="terms" class="read-text">I have read <b>Terms and Conditions</b></label>
-            </span>
+                <input type="checkbox" id="terms" v-model="acceptTerms">
+                <label for="terms" class="read-text">I have read <b>Terms and Conditions</b></label>
+              </span>
               <button :disabled="!isRegisterFormValid">Register</button>
             </form>
-            <a href="javascript:void(0)" id="gotologin" class="account-check" @click="toggleCard">Don't have an account? <b>Sign up</b></a>
+            <a href="javascript:void(0)" class="account-check" @click="toggleCard">Already an account? <b>Sign in</b></a>
           </div>
         </div>
       </div>
@@ -58,14 +67,12 @@
 </template>
 
 <script>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import {tryLogin, tryRegister} from "@/script/auth/Authentication.js";
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-
 
 export default {
   setup() {
-    const isLoginVisible = ref(true) // should be changed to true
+    const isLoginVisible = ref(true)
     const email = ref('')
     const password = ref('')
     const registerEmail = ref('')
@@ -78,19 +85,16 @@ export default {
     const isRegisterEmailFocused = ref(false)
     const isRegisterPasswordFocused = ref(false)
     const isConfirmPasswordFocused = ref(false)
-    const cursorStyle = ref({ display: 'none', left: '0px', top: '0px', transform: 'scale(1)' })
-    const hours = ref('')
-    const minutes = ref('')
-    const ampm = ref('')
-    const router = useRouter();
+    const user = ref({})
+    const router = useRouter()
 
     const isLoginFormValid = computed(() => email.value && password.value)
     const isRegisterFormValid = computed(() =>
-        registerEmail.value &&
-        registerPassword.value &&
-        confirmPassword.value &&
-        registerPassword.value === confirmPassword.value &&
-        acceptTerms.value
+      registerEmail.value &&
+      registerPassword.value &&
+      confirmPassword.value &&
+      registerPassword.value === confirmPassword.value &&
+      acceptTerms.value
     )
 
     const toggleCard = () => {
@@ -121,49 +125,36 @@ export default {
       }
     }
 
-    onMounted(() => {
-
-    })
-
-    onUnmounted(() => {
-    })
-
-    const handleLogin = () => {
-      tryLogin(
-          email.value,
-          password.value,
-          () => {
-            router.push('/');
-          },
-          () => {
-            alert('Login failed');
-          }
-      )
-    }
-
-    const handleRegister = () => {
-      tryRegister(
-          registerEmail.value,
-          registerPassword.value,
-          () => {
-            toggleCard();
-          },
-          (err) => {
-            alert(err);
-          }
-      )
+    // 카카오 로그인 기능
+    const kakaoLogin = () => {
+      window.Kakao.Auth.authorize({
+        redirectUri: "http://localhost:3001/24-02-WSD-Assignment-02-Demo/kakaologin/callback"
+      })
     }
 
     return {
       isLoginVisible, email, password, registerEmail, registerPassword, confirmPassword,
       rememberMe, acceptTerms, isEmailFocused, isPasswordFocused, isRegisterEmailFocused,
-      isRegisterPasswordFocused, isConfirmPasswordFocused, cursorStyle, hours, minutes, ampm,
+      isRegisterPasswordFocused, isConfirmPasswordFocused, user,
       isLoginFormValid, isRegisterFormValid, toggleCard, focusInput, blurInput,
-      handleLogin, handleRegister
+      kakaoLogin
     }
   }
 }
 </script>
+
+<style scoped>
+.kakao-login-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.kakao-login-btn img {
+  width: 200px;
+  cursor: pointer;
+}
+</style>
 
 
 <style>
@@ -178,7 +169,16 @@ export default {
 </style>
 
 <style scoped>
+.kakao-login-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
 
+.kakao-login-btn img {
+  width: 200px;
+  cursor: pointer;
+}
 .bg-image {
   position: fixed;
   top: 0;

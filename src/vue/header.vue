@@ -3,22 +3,28 @@
     <header class="app-header" :class="{ 'scrolled': isScrolled }">
       <div class="header-left">
         <div class="logo">
-          <a href="/#/">
+          <a href="/24-02-WSD-Assignment-02-Demo/">
             <font-awesome-icon :icon="['fas', 'ticket']" style="height: 100%; color: #E50914;" />
           </a>
         </div>
         <nav class="nav-links desktop-nav">
           <ul>
-            <li><a href="/#/">홈</a></li>
-            <li><a href="/#/search">찾아보기</a></li>
-            <li><a href="/#/wishlist">내가 찜한 리스트</a></li>
+            <li><a href="/24-02-WSD-Assignment-02-Demo/">홈</a></li>
+            <li><a href="/24-02-WSD-Assignment-02-Demo/search">찾아보기</a></li>
+            <li><a href="/24-02-WSD-Assignment-02-Demo/wishlist">내가 찜한 리스트</a></li>
           </ul>
         </nav>
       </div>
       <div class="header-right">
-        <button class="icon-button" @click="removeKey">
-          <font-awesome-icon :icon="['fas', 'user']" />
+        <!-- 로그인 여부에 따른 버튼 처리 -->
+        <button v-if="!isAuthenticated" class="icon-button" @click="goToSignIn">
+          로그인
         </button>
+        <div v-else class="user-profile">
+          <img v-if="userName" src="https://via.placeholder.com/30" alt="User Profile" class="profile-img" />
+          <span v-if="userName" class="user-name">{{ userName }}</span>
+          <button class="icon-button logout-button" @click="removeKey">로그아웃</button>
+        </div>
         <button class="icon-button mobile-menu-button" @click="toggleMobileMenu">
           <font-awesome-icon :icon="['fas', 'bars']" />
         </button>
@@ -32,8 +38,7 @@
       </button>
       <nav>
         <ul>
-          <li><a href="/#/" @click="toggleMobileMenu">홈</a></li>
-          <li><a href="/#/popular" @click="toggleMobileMenu">대세 콘텐츠</a></li>
+          <li><a href="/#/home" @click="toggleMobileMenu">홈</a></li>
           <li><a href="/#/search" @click="toggleMobileMenu">찾아보기</a></li>
           <li><a href="/#/wishlist" @click="toggleMobileMenu">내가 찜한 리스트</a></li>
         </ul>
@@ -57,12 +62,30 @@ export default {
   data() {
     return {
       isScrolled: false,
-      isMobileMenuOpen: false
+      isMobileMenuOpen: false,
+      userName: '',  // 유저 이름을 저장할 데이터
+      isAuthenticated: false,  // 로그인 상태
     }
   },
   methods: {
+    // 로그인 상태 확인
+    checkAuthentication() {
+      const storedUserName = localStorage.getItem('User-Name');
+      if (storedUserName) {
+        this.isAuthenticated = true;
+        this.userName = storedUserName;
+      }
+    },
     removeKey() {
       localStorage.removeItem('TMDb-Key');
+      localStorage.removeItem('User-Name');
+      localStorage.removeItem('User-Email');
+      localStorage.removeItem('Kakao-Access-Token');
+      this.isAuthenticated = false;
+      this.userName = '';
+      this.$router.push('/signin');
+    },
+    goToSignIn() {
       this.$router.push('/signin');
     },
     toggleMobileMenu() {
@@ -74,6 +97,7 @@ export default {
   },
   mounted() {
     window.addEventListener('scroll', this.handleScroll);
+    this.checkAuthentication();  // 컴포넌트가 마운트될 때 로그인 상태 확인
   },
   beforeUnmount() {
     window.removeEventListener('scroll', this.handleScroll);
@@ -82,7 +106,6 @@ export default {
 </script>
 
 <style>
-
 .app-header {
   height: 40px;
   display: flex;
@@ -198,6 +221,40 @@ export default {
   color: white;
   font-size: 1.5rem;
   cursor: pointer;
+}
+
+/* 유저 프로필 이미지와 이름 스타일 */
+.user-profile {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+}
+
+.profile-img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.user-name {
+  font-size: 0.85rem;
+  color: white;
+}
+
+/* 작은 로그아웃 버튼 스타일 */
+.logout-button {
+  font-size: 0.85rem;
+  padding: 5px 10px;
+  background-color: transparent;
+  color: white;
+  border: 1px solid white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  background-color: #e50914;
 }
 
 @media (max-width: 768px) {

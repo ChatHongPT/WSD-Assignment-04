@@ -13,7 +13,7 @@ import {
 } from "@/script/movie/URL.ts";
 
 library.add(faSearch, faUser);
-
+console.log(import.meta.env.VITE_ENV);
 export default {
   name: 'Home',
   components: {
