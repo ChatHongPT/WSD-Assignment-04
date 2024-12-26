@@ -22,7 +22,7 @@
 <script lang="ts">
 import {ref, computed, onMounted, onUnmounted, defineComponent, watch} from 'vue';
 import axios from 'axios';
-import {useWishlist} from "@/script/movie/wishlist";
+import {useWishlist} from "../../script/movie/wishlist";
 
 interface Movie {
   id: number;
