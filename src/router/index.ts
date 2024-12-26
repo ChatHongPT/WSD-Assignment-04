@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router'; // 변경된 부분
+import { createRouter, createWebHistory } from 'vue-router' // 변경된 부분
 import SignIn from '@/vue/SignIn.vue';
 import Home from "../vue/home.vue";
 import Callback from '@/views/Callback.vue'; // Callback.vue로 변경
@@ -29,7 +29,13 @@ const routes = [
         name: 'HomeSearch',
         component: () => import('@/views/home-search.vue'),
         path: 'search',
+      },
+      {
+        name: 'Callback',
+        component: () => import('@/views/Callback.vue'),
+        path: '/kakaologin/callback',
       }
+      
     ]
   },
   {
@@ -45,7 +51,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHashHistory('/WSD-Assignment-04/'),  // 변경된 부분: Hash 모드로 변경
+  history: createWebHistory('/WSD-Assignment-04/'),  // 변경된 부분
   routes
 })
 

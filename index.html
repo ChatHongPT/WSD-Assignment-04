@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -13,18 +13,22 @@
       crossorigin="anonymous"
     ></script>
 
-    <script>
-      (function(){
-          var redirect = sessionStorage.redirect;
-          delete sessionStorage.redirect;
-          if (redirect && redirect != location.href) {
-              history.replaceState(null, null, redirect);
-          }
+    <!-- SPA 경로 처리 스크립트 -->
+    <script type="text/javascript">
+      (function() {
+        // 리다이렉션 URL 설정
+        var redirect = sessionStorage.redirect;
+        delete sessionStorage.redirect;
+        if (redirect && redirect !== location.href) {
+          history.replaceState(null, null, redirect);
+        }
       })();
     </script>
   </head>
   <body>
     <div id="app"></div>
+
+    <!-- Vue.js 앱을 실행하는 스크립트 -->
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
