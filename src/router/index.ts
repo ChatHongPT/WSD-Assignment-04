@@ -45,7 +45,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory('/24-02-WSD-Assignment-02-Demo/'),  // 변경된 부분
+  history: createWebHistory('/'),  // 변경된 부분
   routes
 })
 
