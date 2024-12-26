@@ -3,20 +3,19 @@
     <header class="app-header" :class="{ 'scrolled': isScrolled }">
       <div class="header-left">
         <div class="logo">
-          <a href="WSD-Assignment-04/">
+          <router-link :to="`${baseUrl}/`">
             <font-awesome-icon :icon="['fas', 'ticket']" style="height: 100%; color: #E50914;" />
-          </a>
+          </router-link>
         </div>
         <nav class="nav-links desktop-nav">
           <ul>
-            <li><a href="/WSD-Assignment-04/">홈</a></li>
-            <li><a href="/WSD-Assignment-04/search">찾아보기</a></li>
-            <li><a href="/WSD-Assignment-04/wishlist">내가 찜한 리스트</a></li>
+            <li><router-link :to="`${baseUrl}/`">홈</router-link></li>
+            <li><router-link :to="`${baseUrl}/search`">찾아보기</router-link></li>
+            <li><router-link :to="`${baseUrl}/wishlist`">내가 찜한 리스트</router-link></li>
           </ul>
         </nav>
       </div>
       <div class="header-right">
-        <!-- 로그인 여부에 따른 버튼 처리 -->
         <button v-if="!isAuthenticated" class="icon-button" @click="goToSignIn">
           로그인
         </button>
@@ -31,16 +30,15 @@
       </div>
     </header>
 
-    <!-- Mobile Navigation -->
     <div class="mobile-nav" :class="{ 'open': isMobileMenuOpen }">
       <button class="close-button" @click="toggleMobileMenu">
         <font-awesome-icon :icon="['fas', 'times']" />
       </button>
       <nav>
         <ul>
-          <li><a href="/#/home" @click="toggleMobileMenu">홈</a></li>
-          <li><a href="/#/search" @click="toggleMobileMenu">찾아보기</a></li>
-          <li><a href="/#/wishlist" @click="toggleMobileMenu">내가 찜한 리스트</a></li>
+          <li><router-link :to="`${baseUrl}/`" @click="toggleMobileMenu">홈</router-link></li>
+          <li><router-link :to="`${baseUrl}/search`" @click="toggleMobileMenu">찾아보기</router-link></li>
+          <li><router-link :to="`${baseUrl}/wishlist`" @click="toggleMobileMenu">내가 찜한 리스트</router-link></li>
         </ul>
       </nav>
     </div>
@@ -63,12 +61,12 @@ export default {
     return {
       isScrolled: false,
       isMobileMenuOpen: false,
-      userName: '',  // 유저 이름을 저장할 데이터
-      isAuthenticated: false,  // 로그인 상태
+      userName: '',
+      isAuthenticated: false,
+      baseUrl: import.meta.env.VITE_BASE_URL || ''
     }
   },
   methods: {
-    // 로그인 상태 확인
     checkAuthentication() {
       const storedUserName = localStorage.getItem('User-Name');
       if (storedUserName) {
@@ -83,10 +81,10 @@ export default {
       localStorage.removeItem('Kakao-Access-Token');
       this.isAuthenticated = false;
       this.userName = '';
-      this.$router.push('/signin');
+      this.$router.push(`${this.baseUrl}/signin`);
     },
     goToSignIn() {
-      this.$router.push('/signin');
+      this.$router.push(`${this.baseUrl}/signin`);
     },
     toggleMobileMenu() {
       this.isMobileMenuOpen = !this.isMobileMenuOpen;
@@ -97,7 +95,7 @@ export default {
   },
   mounted() {
     window.addEventListener('scroll', this.handleScroll);
-    this.checkAuthentication();  // 컴포넌트가 마운트될 때 로그인 상태 확인
+    this.checkAuthentication();
   },
   beforeUnmount() {
     window.removeEventListener('scroll', this.handleScroll);
@@ -223,7 +221,6 @@ export default {
   cursor: pointer;
 }
 
-/* 유저 프로필 이미지와 이름 스타일 */
 .user-profile {
   display: flex;
   align-items: center;
@@ -242,7 +239,6 @@ export default {
   color: white;
 }
 
-/* 작은 로그아웃 버튼 스타일 */
 .logout-button {
   font-size: 0.85rem;
   padding: 5px 10px;
