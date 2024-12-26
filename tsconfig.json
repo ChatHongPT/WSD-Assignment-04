@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "composite": true,
-    "baseUrl": "./src",        // 기본 경로 설정
+    "baseUrl": ".",        // 기본 경로 설정
     "paths": {
-      "@/*": ["*"]     // @ 경로 별칭 설정
+      "@/*": ["src/*"]     // @ 경로 별칭 설정
     },
     "types": ["node"],     // Node.js 타입 선언 추가
     "module": "ESNext",    // ESNext 모듈 시스템 사용
