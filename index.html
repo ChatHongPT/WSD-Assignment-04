@@ -16,11 +16,11 @@
     <!-- SPA 경로 처리 스크립트 -->
     <script type="text/javascript">
       (function() {
-        // 리다이렉션 URL 설정
         var redirect = sessionStorage.redirect;
         delete sessionStorage.redirect;
         if (redirect && redirect !== location.href) {
-          history.replaceState(null, null, redirect);
+          // GitHub Pages 경로에 맞게 리다이렉션 처리
+          history.replaceState(null, null, redirect.replace('/WSD-Assignment-04', ''));
         }
       })();
     </script>
