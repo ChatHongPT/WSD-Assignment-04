@@ -3,15 +3,15 @@
     <header class="app-header" :class="{ 'scrolled': isScrolled }">
       <div class="header-left">
         <div class="logo">
-          <a href="/">
+          <a href="WSD-Assignment-04/">
             <font-awesome-icon :icon="['fas', 'ticket']" style="height: 100%; color: #E50914;" />
           </a>
         </div>
         <nav class="nav-links desktop-nav">
           <ul>
-            <li><a href="/">홈</a></li>
-            <li><a href="/search">찾아보기</a></li>
-            <li><a href="/wishlist">내가 찜한 리스트</a></li>
+            <li><a href="/WSD-Assignment-04/">홈</a></li>
+            <li><a href="/WSD-Assignment-04/search">찾아보기</a></li>
+            <li><a href="/WSD-Assignment-04/wishlist">내가 찜한 리스트</a></li>
           </ul>
         </nav>
       </div>
