@@ -21,6 +21,7 @@
   
       const getKakaoToken = async (code) => {
         try {
+          console.log("getkakaotoken");
           const data = {
             grant_type: "authorization_code",
             client_id: import.meta.env.VITE_KAKAO_JAVASCRIPT_KEY,
@@ -51,6 +52,7 @@
   
       const getKakaoUserInfo = async () => {
         try {
+          console.log("getkakaouserinfo");
           if (!window.Kakao?.API) {
             throw new Error('Kakao SDK not initialized')
           }
@@ -65,6 +67,7 @@
   
       const setKakaoToken = async (code) => {
         try {
+          console.log("setkakotoken");
           const data = await getKakaoToken(code)
           if (!data) return
           
@@ -78,6 +81,7 @@
   
       const setUserInfo = async (accessToken) => {
         try {
+          console.log("setuserinfo");
           const res = await getKakaoUserInfo()
           if (!res) return
   
@@ -102,6 +106,7 @@
   
       onMounted(async () => {
         try {
+          console.log("onmounted");
           const urlParams = new URLSearchParams(window.location.search)
           if (urlParams.has("code")) {
             const code = urlParams.get("code")
